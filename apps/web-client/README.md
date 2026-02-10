@@ -1,73 +1,103 @@
-# React + TypeScript + Vite
+# React Starter
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This React project follows a feature-based architecture, designed for easy scalability. It allows new features to be added with minimal impact on existing code, improving maintainability and reducing the risk of introducing bugs.
 
-Currently, two official plugins are available:
+## ✨ Adding a Feature
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+To add a new feature to the project:
 
-## React Compiler
+1. **Create a new folder** inside the `features/` directory.
+    - Each feature can be **domain-based** or **feature-based**, depending on your project organization.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+2. **Add your main view** for the feature directly in the folder:
+    - Example: `<feature>View.tsx`
+    - Each feature folder can also contain its **own components**, **API calls**, **styles**, and other related files.
 
-## Expanding the ESLint configuration
+> This feature-based approach makes it easier to **add new functionality**, **maintain existing code**, and **scale the application** without affecting unrelated parts of the project.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+💡 **Sample of this approach:**  
+The **Home Page** and **Post Page** are implemented using this feature-based structure.
 
-```js
-export default defineConfig([
-	globalIgnores(['dist']),
-	{
-		files: ['**/*.{ts,tsx}'],
-		extends: [
-			// Other configs...
+## 📦 Project Configuration Overview
 
-			// Remove tseslint.configs.recommended and replace with this
-			tseslint.configs.recommendedTypeChecked,
-			// Alternatively, use this for stricter rules
-			tseslint.configs.strictTypeChecked,
-			// Optionally, add this for stylistic rules
-			tseslint.configs.stylisticTypeChecked,
+This section describes the key parts of the `package.json` for this React project, including scripts, dependencies, devDependencies, and linting configuration.
 
-			// Other configs...
-		],
-		languageOptions: {
-			parserOptions: {
-				project: ['./tsconfig.node.json', './tsconfig.app.json'],
-				tsconfigRootDir: import.meta.dirname,
-			},
-			// other options...
-		},
-	},
-])
-```
+---
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### ⚡ Scripts
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+The `scripts` section defines common commands for development, building, linting, and previewing the project:
 
-export default defineConfig([
-	globalIgnores(['dist']),
-	{
-		files: ['**/*.{ts,tsx}'],
-		extends: [
-			// Other configs...
-			// Enable lint rules for React
-			reactX.configs['recommended-typescript'],
-			// Enable lint rules for React DOM
-			reactDom.configs.recommended,
-		],
-		languageOptions: {
-			parserOptions: {
-				project: ['./tsconfig.node.json', './tsconfig.app.json'],
-				tsconfigRootDir: import.meta.dirname,
-			},
-			// other options...
-		},
-	},
-])
+| Script    | Command                | Description                                                               |
+| --------- | ---------------------- | ------------------------------------------------------------------------- |
+| `dev`     | `vite`                 | 🚀 Starts the development server with hot module replacement (HMR).       |
+| `build`   | `tsc -b && vite build` | 🏗️ Compiles TypeScript files and builds the production-ready Vite bundle. |
+| `lint`    | `eslint .`             | 🔍 Runs ESLint on the entire project to check for code quality issues.    |
+| `preview` | `vite preview`         | 👀 Serves the production build locally for preview purposes.              |
+
+---
+
+### 📚 Dependencies
+
+These are runtime dependencies required for the project to function:
+
+- **⚛️ React & React DOM**
+    - `react` `^19.2.0`
+    - `react-dom` `^19.2.0`
+- **🌐 Routing**
+    - `react-router` `^7.13.0`
+- **🧠 State Management**
+    - `zustand` `^5.0.11`
+- **🎨 UI & Charts (Mantine & Tabler)**
+    - `@mantine/core` `^8.3.14`
+    - `@mantine/hooks` `^8.3.14`
+    - `@mantine/form` `^8.3.14`
+    - `@mantine/notifications` `^8.3.14`
+    - `@mantine/charts` `^8.3.14`
+    - `@tabler/icons-react` `^3.36.1`
+- **📊 Charts Library**
+    - `recharts` `^3.7.0`
+
+> These dependencies provide the core functionality of the application including UI components, charts, state management, routing, and notifications.
+
+---
+
+### 🛠️ DevDependencies
+
+These are tools used for development, linting, type-checking, and building:
+
+- **📝 TypeScript & Types**
+    - `typescript` `~5.9.3`
+    - `@types/react` `^19.2.7`
+    - `@types/react-dom` `^19.2.3`
+    - `@types/node` `^24.10.1`
+- **⚡ Vite & Plugins**
+    - `vite` `^7.3.1`
+    - `@vitejs/plugin-react` `^5.1.1`
+- **🔧 Linting & Formatting**
+    - `eslint` `^9.39.1`
+    - `@eslint/js` `^9.39.1`
+    - `@antfu/eslint-config` `^7.3.0`
+    - `prettier` `^3.8.1`
+    - `lint-staged` `^16.2.7`
+- **🎨 CSS & PostCSS**
+    - `postcss` `^8.5.6`
+    - `postcss-preset-mantine` `^1.18.0`
+    - `postcss-simple-vars` `^7.0.1`
+- **🌐 Globals**
+    - `globals` `^16.5.0`
+
+> These tools help enforce code quality, enable TypeScript type checking, manage styles, and streamline development workflow.
+
+---
+
+### 🧹 Lint-Staged Configuration
+
+The project uses `lint-staged` to run automatic formatting and linting before committing code:
+
+```json
+"lint-staged": {
+  "**/*": "prettier --write --ignore-unknown --ignore-path",
+  "*.{js,cjs,mjs,ts,jsx,tsx,vue}": "eslint --fix"
+}
 ```
