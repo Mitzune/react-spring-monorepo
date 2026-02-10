@@ -27,8 +27,8 @@ export function PostListView() {
 	return (
 		<Flex direction={'column'} gap={'lg'}>
 			{posts.length > 0 ? (
-				posts.map((post) => (
-					<Card shadow="sm" padding="lg">
+				posts.map((post, index) => (
+					<Card key={`post-${post.authorName}-${index}`} shadow="sm" padding="lg">
 						<Flex align={'center'} gap={'md'}>
 							<IconUser />
 

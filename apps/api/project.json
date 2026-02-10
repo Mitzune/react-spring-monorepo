@@ -18,7 +18,7 @@
 		"build": {
 			"executor": "nx:run-commands",
 			"options": {
-				"command": "pnpm build",
+				"command": "mvn clean package",
 				"cwd": "apps/api"
 			}
 		}

@@ -20,4 +20,5 @@
   "[java]": {
     "editor.defaultFormatter": "RudraPatel.prettier-plugin-java-vscode"
   },
+  "java.configuration.updateBuildConfiguration": "interactive",
 }

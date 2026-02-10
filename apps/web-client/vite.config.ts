@@ -21,5 +21,8 @@ export default defineConfig(({ mode }) => {
 				'@types': path.resolve(__dirname, 'src/types'),
 			},
 		},
+		build: {
+			outDir: '../../build/web-client',
+		},
 	}
 })
