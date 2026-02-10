@@ -44,6 +44,12 @@ pnpm nx run-many -t dev
 # Staging
 pnpm nx run-many -t staging
 ```
+For development, a **PostgreSQL test database** is available using Docker Compose, allowing you to run the database without heavy setup:
+
+```bash
+# Start development services including Postgres
+docker-compose up
+```
 
 ## Deploying the Project
 
