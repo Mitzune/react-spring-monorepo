@@ -1,0 +1,23 @@
+{
+  // prettier & eslint
+  "editor.defaultFormatter": "esbenp.prettier-vscode", // Use Prettier as the default formatter
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "always"
+  },
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact",
+    "vue" 
+  ],
+  "eslint.run": "onSave",
+  "editor.formatOnSave": true,
+  "prettier.requireConfig": true,
+  "eslint.format.enable": true,
+
+  // Java formatter
+  "[java]": {
+    "editor.defaultFormatter": "RudraPatel.prettier-plugin-java-vscode"
+  },
+}

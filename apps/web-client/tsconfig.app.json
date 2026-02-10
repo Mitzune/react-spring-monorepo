@@ -28,7 +28,8 @@
 		"baseUrl": "./src",
 		"paths": {
 			"@app/*": ["./app/*"],
-			"@features/*": ["./features/*"]
+			"@features/*": ["./features/*"],
+			"@layouts/*": ["./layouts/*"]
 		}
 	},
 	"include": ["src"]
