@@ -1,0 +1,7 @@
+{
+  "name": "react-spring-monorepo",
+  "private": true,
+  "scripts": {
+    "nx": "nx"
+  }
+}

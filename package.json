@@ -1,0 +1,14 @@
+{
+  "name": "react-spring-monorepo",
+  "version": "1.0.0",
+  "description": "A React & SpringBoot monorepo",
+  "scripts": {
+    "prepare": "husky"
+  },
+  "keywords": [],
+  "author": "OriginalCube",
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "nx": "^22.5.0"
+  }
+}
