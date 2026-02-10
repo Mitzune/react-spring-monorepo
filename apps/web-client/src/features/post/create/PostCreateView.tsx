@@ -1,5 +1,7 @@
 import { Button, Flex, Grid, TextInput, Title } from '@mantine/core'
 import { useForm } from '@mantine/form'
+import { notifications } from '@mantine/notifications'
+import Api from '@utils/Api'
 
 export function PostCreateView() {
 	const form = useForm({
@@ -26,10 +28,28 @@ export function PostCreateView() {
 		},
 	})
 
-	const onSubmit = () => {}
+	const createPost = async (values: { message: string; author: string }) => {
+		try {
+			const response = await Api.post({ authorName: values.author, message: values.message }, { path: '/posts' })
+
+			if (response) {
+				notifications.show({
+					color: 'green',
+					title: 'Success',
+					message: 'Post created successfully.',
+				})
+			}
+		} catch {
+			notifications.show({
+				color: 'red',
+				title: 'Something went wrong',
+				message: 'Error processing request!',
+			})
+		}
+	}
 
 	return (
-		<form onSubmit={form.onSubmit(() => onSubmit())}>
+		<form onSubmit={form.onSubmit((values) => createPost(values))}>
 			<Flex align={'center'} justify={'center'}>
 				<Grid w={600} gutter={'lg'}>
 					<Grid.Col span={12}>

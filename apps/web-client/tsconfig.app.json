@@ -29,7 +29,9 @@
 		"paths": {
 			"@app/*": ["./app/*"],
 			"@features/*": ["./features/*"],
-			"@layouts/*": ["./layouts/*"]
+			"@layouts/*": ["./layouts/*"],
+			"@utils/*": ["./utils/*"],
+			"@types/*": ["./types/*"]
 		}
 	},
 	"include": ["src"]
