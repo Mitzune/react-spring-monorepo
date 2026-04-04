@@ -1,33 +1,33 @@
-interface TypeQueryOptions {
-	path: string
-	baseUrl?: string
+function get(url: string, options: AnyObject) {
+	options = {
+		...options,
+		'Content-Type': 'application/json',
+		Accept: 'application/json',
+	}
+
+	return fetch(url, options).then((res) => res.json())
 }
 
-async function get(queryParams: AnyObject, options: TypeQueryOptions) {
-	const baseUrl = options?.baseUrl ?? import.meta.env.VITE_API_BASE_URL
+function post(url: string, { arg }: { arg: AnyObject }) {
+	const headerValue = {
+		'Content-Type': 'application/json',
+		Accept: 'application/json',
+	}
 
-	const query = new URLSearchParams(queryParams).toString()
+	const baseUrl = 'http://localhost:8080'
 
-	const response = await fetch(`${baseUrl}${options.path}?${query}`)
-
-	return response.json()
-}
-
-async function post(body: AnyObject, options: TypeQueryOptions) {
-	const baseUrl = options?.baseUrl ?? import.meta.env.VITE_API_BASE_URL
-
-	const response = await fetch(`${baseUrl}${options.path}`, {
+	return fetch(`${baseUrl}${url}`, {
 		method: 'POST',
 		headers: {
-			'Content-Type': 'application/json',
+			...headerValue,
 		},
-		body: JSON.stringify(body),
-	})
-
-	return response.json()
+		body: JSON.stringify(arg),
+	}).then((res) => res.json())
 }
 
-export default {
-	get: async (queryParams: AnyObject, options: TypeQueryOptions) => await get(queryParams, options),
-	post: async (body: AnyObject, options: TypeQueryOptions) => await post(body, options),
+const Api = {
+	get,
+	post,
 }
+
+export { Api }
