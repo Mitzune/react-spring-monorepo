@@ -16,7 +16,7 @@ dist-ssr
 *.local
 build
 .env
-.env.*
+.env.development
 
 # Spring boot - ignore
 
