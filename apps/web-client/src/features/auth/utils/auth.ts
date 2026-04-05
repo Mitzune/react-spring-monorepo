@@ -1,7 +1,13 @@
+import { notifications } from '@mantine/notifications'
 import { app } from '@utils/firebase'
 import { getAuth, OAuthProvider, signInWithPopup } from 'firebase/auth'
 
-export async function loginWithMicrosoft() {
+export interface FirebaseAuthResponse {
+	data: null | { token: string }
+	error: null | string
+}
+
+export async function loginWithMicrosoft(): Promise<FirebaseAuthResponse> {
 	const auth = getAuth(app)
 	const provider = new OAuthProvider('microsoft.com')
 	provider.setCustomParameters({
@@ -20,4 +26,15 @@ export async function loginWithMicrosoft() {
 		data: { token: await user.getIdToken() },
 		error: null,
 	}
+}
+
+export async function login(provider: () => Promise<FirebaseAuthResponse>, trigger: AnyFunction) {
+	const { data: userCredentials, error } = await provider()
+
+	if (error || !userCredentials) {
+		notifications.show({ title: 'Warning', message: error ?? 'Something went wrong!', color: 'red' })
+		return
+	}
+
+	return trigger(userCredentials)
 }

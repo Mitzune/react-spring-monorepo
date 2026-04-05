@@ -44,3 +44,4 @@ target/
 application.properties
 application-local.properties
 application-dev.properties
+*.pem
