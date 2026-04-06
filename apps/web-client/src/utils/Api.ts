@@ -1,33 +1,22 @@
-function get(url: string, options: AnyObject) {
-	options = {
-		...options,
-		'Content-Type': 'application/json',
-		Accept: 'application/json',
-	}
+import type { FetchOptions } from 'ofetch'
+import { ofetch } from 'ofetch'
 
-	return fetch(url, options).then((res) => res.json())
+const headerOptions = {
+	'Content-Type': 'application/json',
+	Accept: 'application/json',
 }
 
-function post(url: string, { arg }: { arg: AnyObject }) {
-	const headerValue = {
-		'Content-Type': 'application/json',
-		Accept: 'application/json',
-	}
-
-	const baseUrl = 'http://localhost:8080'
-
-	return fetch(`${baseUrl}${url}`, {
-		method: 'POST',
-		headers: {
-			...headerValue,
-		},
-		body: JSON.stringify(arg),
-	}).then((res) => res.json())
-}
+const apiFetch = ofetch.create({
+	baseURL: 'http://localhost:8080',
+	onRequest({ options }) {
+		options.headers = { ...options.headers, ...headerOptions }
+	},
+})
 
 const Api = {
-	get,
-	post,
+	get: (url: string, opts?: FetchOptions) => apiFetch(url, { method: 'GET', ...opts }),
+
+	post: (url: string, body: AnyObject, opts?: FetchOptions) => apiFetch(url, { method: 'POST', body, ...opts }),
 }
 
 export { Api }

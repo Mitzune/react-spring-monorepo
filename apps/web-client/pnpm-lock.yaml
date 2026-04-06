@@ -25,9 +25,15 @@ importers:
             '@tabler/icons-react':
                 specifier: ^3.36.1
                 version: 3.36.1(react@19.2.4)
+            '@tanstack/react-query':
+                specifier: ^5.96.2
+                version: 5.96.2(react@19.2.4)
             firebase:
                 specifier: ^12.10.0
                 version: 12.10.0
+            ofetch:
+                specifier: ^1.5.1
+                version: 1.5.1
             react:
                 specifier: ^19.2.0
                 version: 19.2.4
@@ -40,9 +46,6 @@ importers:
             recharts:
                 specifier: ^3.7.0
                 version: 3.7.0(@types/react@19.2.13)(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)(redux@5.0.1)
-            swr:
-                specifier: ^2.4.1
-                version: 2.4.1(react@19.2.4)
             zustand:
                 specifier: ^5.0.11
                 version: 5.0.11(@types/react@19.2.13)(immer@11.1.4)(react@19.2.4)(use-sync-external-store@1.6.0(react@19.2.4))
@@ -1537,6 +1540,20 @@ packages:
                 integrity: sha512-f4Jg3Fof/Vru5ioix/UO4GX+sdDsF9wQo47FbtvG+utIYYVQ/QVAC0QYgcBbAjQGfbdOh2CCf0BgiFOF9Ixtjw==,
             }
 
+    '@tanstack/query-core@5.96.2':
+        resolution:
+            {
+                integrity: sha512-hzI6cTVh4KNRk8UtoIBS7Lv9g6BnJPXvBKsvYH1aGWvv0347jT3BnSvztOE+kD76XGvZnRC/t6qdW1CaIfwCeA==,
+            }
+
+    '@tanstack/react-query@5.96.2':
+        resolution:
+            {
+                integrity: sha512-sYyzzJT4G0g02azzJ8o55VFFV31XvFpdUpG+unxS0vSaYsJnSPKGoI6WdPwUucJL1wpgGfwfmntNX/Ub1uOViA==,
+            }
+        peerDependencies:
+            react: ^18 || ^19
+
     '@types/babel__core@7.20.5':
         resolution:
             {
@@ -2256,6 +2273,12 @@ packages:
                 integrity: sha512-0je+qPKHEMohvfRTCEo3CrPG6cAzAYgmzKyxRiYSSDkS6eGJdyVJm7WaYA5ECaAD9wLB2T4EEeymA5aFVcYXCA==,
             }
         engines: { node: '>=6' }
+
+    destr@2.0.5:
+        resolution:
+            {
+                integrity: sha512-ugFTXCtDZunbzasqBxrK93Ik/DRYsO6S/fedkWEMKqt04xZ4csmnmwGDBAb07QWNaGMAmnTIemsYZCksjATwsA==,
+            }
 
     detect-node-es@1.1.0:
         resolution:
@@ -3538,6 +3561,12 @@ packages:
             }
         engines: { node: '>=18' }
 
+    node-fetch-native@1.6.7:
+        resolution:
+            {
+                integrity: sha512-g9yhqoedzIUm0nTnTqAQvueMPVOuIY16bqgAJJC8XOOubYFNwz6IER9qs0Gq2Xd0+CecCKFjtdDTMA4u4xG06Q==,
+            }
+
     node-releases@2.0.27:
         resolution:
             {
@@ -3561,6 +3590,12 @@ packages:
         resolution:
             {
                 integrity: sha512-3DC3UMpeffLTHiuXSy/UG4NOIYTLlY9u3V82+djSCLYClWobZiS4ivYzpIUWrRY/nfsJ8cWsKyG3QfyLePmhvg==,
+            }
+
+    ofetch@1.5.1:
+        resolution:
+            {
+                integrity: sha512-2W4oUZlVaqAPAil6FUg/difl6YhqhUR7x2eZY4bQCko22UXg3hptq9KLQdqFClV+Wu85UX7hNtdGTngi/1BxcA==,
             }
 
     onetime@7.0.0:
@@ -4200,14 +4235,6 @@ packages:
                 integrity: sha512-qpCAvRl9stuOHveKsn7HncJRvv501qIacKzQlO/+Lwxc9+0q2wLyv4Dfvt80/DPn2pqOBsJdDiogXGR9+OvwRw==,
             }
         engines: { node: '>=8' }
-
-    swr@2.4.1:
-        resolution:
-            {
-                integrity: sha512-2CC6CiKQtEwaEeNiqWTAw9PGykW8SR5zZX8MZk6TeAvEAnVS7Visz8WzphqgtQ8v2xz/4Q5K+j+SeMaKXeeQIA==,
-            }
-        peerDependencies:
-            react: ^16.11.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
     synckit@0.11.12:
         resolution:
@@ -5575,6 +5602,13 @@ snapshots:
 
     '@tabler/icons@3.36.1': {}
 
+    '@tanstack/query-core@5.96.2': {}
+
+    '@tanstack/react-query@5.96.2(react@19.2.4)':
+        dependencies:
+            '@tanstack/query-core': 5.96.2
+            react: 19.2.4
+
     '@types/babel__core@7.20.5':
         dependencies:
             '@babel/parser': 7.29.0
@@ -5988,6 +6022,8 @@ snapshots:
     deep-is@0.1.4: {}
 
     dequal@2.0.3: {}
+
+    destr@2.0.5: {}
 
     detect-node-es@1.1.0: {}
 
@@ -6971,6 +7007,8 @@ snapshots:
 
     natural-orderby@5.0.0: {}
 
+    node-fetch-native@1.6.7: {}
+
     node-releases@2.0.27: {}
 
     nth-check@2.1.1:
@@ -6980,6 +7018,12 @@ snapshots:
     object-assign@4.1.1: {}
 
     object-deep-merge@2.0.0: {}
+
+    ofetch@1.5.1:
+        dependencies:
+            destr: 2.0.5
+            node-fetch-native: 1.6.7
+            ufo: 1.6.3
 
     onetime@7.0.0:
         dependencies:
@@ -7365,12 +7409,6 @@ snapshots:
     supports-color@7.2.0:
         dependencies:
             has-flag: 4.0.0
-
-    swr@2.4.1(react@19.2.4):
-        dependencies:
-            dequal: 2.0.3
-            react: 19.2.4
-            use-sync-external-store: 1.6.0(react@19.2.4)
 
     synckit@0.11.12:
         dependencies:

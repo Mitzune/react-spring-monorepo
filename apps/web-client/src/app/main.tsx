@@ -1,24 +1,25 @@
 import { router } from '@app/router'
 import { MantineProvider } from '@mantine/core'
 import { Notifications } from '@mantine/notifications'
-import { Api } from '@utils/Api'
-import { StrictMode } from 'react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
+import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { RouterProvider } from 'react-router'
-import { SWRConfig } from 'swr'
 import '@app/index.css'
 import '@mantine/core/styles.css'
 import '@mantine/charts/styles.css'
 import '@mantine/notifications/styles.css'
 
+const queryClient = new QueryClient()
+
 createRoot(document.getElementById('root')!).render(
 	<StrictMode>
 		<MantineProvider>
 			<Notifications />
-			<SWRConfig value={{ fetcher: (resource, init) => Api.get(resource, init) }}>
+			<QueryClientProvider client={queryClient}>
 				<RouterProvider router={router} />
-			</SWRConfig>
+			</QueryClientProvider>
 		</MantineProvider>
 	</StrictMode>,
 )

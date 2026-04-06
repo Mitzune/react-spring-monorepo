@@ -1,4 +1,3 @@
-import { notifications } from '@mantine/notifications'
 import { app } from '@utils/firebase'
 import { getAuth, OAuthProvider, signInWithPopup } from 'firebase/auth'
 
@@ -26,15 +25,4 @@ export async function loginWithMicrosoft(): Promise<FirebaseAuthResponse> {
 		data: { token: await user.getIdToken() },
 		error: null,
 	}
-}
-
-export async function login(provider: () => Promise<FirebaseAuthResponse>, trigger: AnyFunction) {
-	const { data: userCredentials, error } = await provider()
-
-	if (error || !userCredentials) {
-		notifications.show({ title: 'Warning', message: error ?? 'Something went wrong!', color: 'red' })
-		return
-	}
-
-	return trigger(userCredentials)
 }

@@ -1,12 +1,11 @@
 import { Button, Card, Flex } from '@mantine/core'
 import { IconBrandWindows } from '@tabler/icons-react'
-import { Api } from '@utils/Api'
-import useSWRMutation from 'swr/mutation'
+import { login } from './api/loginUser'
 import { FormHeader } from './components/FormHeader'
-import { login, loginWithMicrosoft } from './utils/auth'
+import { loginWithMicrosoft } from './utils/auth'
 
 export function AuthView() {
-	const { trigger, data } = useSWRMutation('/api/auth/Microsoft', Api.post)
+	const { executeLogin, data, isPending } = login()
 
 	return (
 		<Flex>
@@ -15,7 +14,12 @@ export function AuthView() {
 					<FormHeader title="Business App" subText="Login to continue." />
 
 					<Flex justify={'center'} mt={24}>
-						<Button variant="outline" w={'75%'} onClick={() => login(loginWithMicrosoft, trigger)}>
+						<Button
+							variant="outline"
+							w={'75%'}
+							onClick={() => executeLogin(loginWithMicrosoft)}
+							loading={isPending}
+						>
 							<Flex align={'center'} gap={'4'}>
 								<IconBrandWindows size={'24'} />
 								<span>Microsoft</span>
