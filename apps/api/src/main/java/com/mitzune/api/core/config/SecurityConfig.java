@@ -60,7 +60,7 @@ public class SecurityConfig {
       Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
     );
     configuration.setAllowCredentials(true);
-    configuration.setAllowedHeaders(List.of("Authorization"));
+    configuration.setAllowedHeaders(List.of("*"));
     UrlBasedCorsConfigurationSource source =
       new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", configuration);
