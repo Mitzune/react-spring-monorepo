@@ -10,6 +10,7 @@ import com.mitzune.api.features.auth.repository.RefreshTokenSessionRepository;
 import com.mitzune.api.features.auth.repository.UserIdentityRepository;
 import com.mitzune.api.features.auth.v1.dto.AuthRequestDto;
 import com.mitzune.api.features.auth.v1.dto.AuthResponseDto;
+import com.mitzune.api.features.auth.v1.dto.AuthTokenResponse;
 import com.mitzune.api.features.auth.v1.service.AuthService;
 import com.mitzune.api.features.auth.v1.service.DeviceService;
 import com.mitzune.api.features.user.entity.User;
@@ -28,7 +29,6 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -180,7 +180,7 @@ public class AuthServiceImpl implements AuthService {
 
   @Transactional
   @Override
-  public AuthResponseDto refreshTokens(String refreshToken) {
+  public AuthTokenResponse refreshTokens(String refreshToken) {
     if (refreshToken.isEmpty()) {
       throw AuthException.noRefreshToken();
     }
@@ -200,8 +200,7 @@ public class AuthServiceImpl implements AuthService {
 
     User user = refreshTokenSession.getUser();
 
-    return new AuthResponseDto(
-      userMapper.toDto(user),
+    return new AuthTokenResponse(
       this.issueToken(user.getId(), user.getUserRole().name())
     );
   }

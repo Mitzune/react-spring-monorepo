@@ -2,6 +2,7 @@ package com.mitzune.api.features.auth.v1.controller;
 
 import com.mitzune.api.features.auth.v1.dto.AuthRequestDto;
 import com.mitzune.api.features.auth.v1.dto.AuthResponseDto;
+import com.mitzune.api.features.auth.v1.dto.AuthTokenResponse;
 import com.mitzune.api.features.auth.v1.enums.AuthProvider;
 import com.mitzune.api.features.auth.v1.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -53,7 +54,7 @@ public class AuthController {
   }
 
   @PostMapping("/refresh")
-  public ResponseEntity<AuthResponseDto> refreshTokens(
+  public ResponseEntity<AuthTokenResponse> refreshTokens(
     @Valid @CookieValue(name = "refresh_token") String refreshToken
   ) {
     return ResponseEntity.ok(authService.refreshTokens(refreshToken));

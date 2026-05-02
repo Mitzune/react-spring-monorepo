@@ -9,4 +9,6 @@ public interface UserService {
     AuthRequestDto authRequestDto,
     FirebaseToken firebaseToken
   );
+
+  UserDto getCurrentUser();
 }

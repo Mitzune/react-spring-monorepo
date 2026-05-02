@@ -3,6 +3,7 @@ import type { User } from '@features/user/types/User'
 import { Api } from '@utils/Api'
 import { useState } from 'react'
 import { useNavigate } from 'react-router'
+import { toast } from 'sonner'
 
 import { setAccessToken } from '../store/useAuthStore'
 import type { FirebaseAuthResponse } from '../utils/auth'
@@ -17,7 +18,7 @@ export function useLogin() {
 			const { data: userCredentials, error } = await provider()
 
 			if (error || !userCredentials) {
-				// notifications.show({ title: 'Warning', message: error ?? 'Something went wrong!', color: 'red' })
+				toast.warning(error ?? 'Something went wrong!')
 				return
 			}
 
@@ -32,13 +33,13 @@ export function useLogin() {
 				navigate('/')
 			} catch {
 				setIsLoading(false)
-				// notifications.show({ title: 'Warning', message: 'Something went wrong!', color: 'red' })
+				toast.warning('Something went wrong!')
 			}
 
 			setIsLoading(false)
 		} catch {
 			setIsLoading(false)
-			// notifications.show({ title: 'Warning', message: 'Something went wrong!', color: 'red' })
+			toast.warning('Something went wrong!')
 		}
 	}
 

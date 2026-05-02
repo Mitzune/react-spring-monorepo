@@ -26,8 +26,6 @@ This section describes the key parts of the `package.json` for this React projec
 
 ### ⚡ Scripts
 
-The `scripts` section defines common commands for development, building, linting, and previewing the project:
-
 | Script    | Command                | Description                                                               |
 | --------- | ---------------------- | ------------------------------------------------------------------------- |
 | `dev`     | `vite`                 | 🚀 Starts the development server with hot module replacement (HMR).       |
@@ -48,17 +46,25 @@ These are runtime dependencies required for the project to function:
     - `react-router` `^7.13.0`
 - **🧠 State Management**
     - `zustand` `^5.0.11`
-- **🎨 UI & Charts (Mantine & Tabler)**
-    - `@mantine/core` `^8.3.14`
-    - `@mantine/hooks` `^8.3.14`
-    - `@mantine/form` `^8.3.14`
-    - `@mantine/notifications` `^8.3.14`
-    - `@mantine/charts` `^8.3.14`
+- **🎨 UI & Styling**
+    - `radix-ui` `^1.4.3`
+    - `shadcn` `^4.3.0`
+    - `class-variance-authority` `^0.7.1`
+    - `clsx` `^2.1.1`
+    - `tailwindcss` `^4.2.2`
+    - `tailwind-merge` `^3.5.0`
+    - `tw-animate-css` `^1.4.0`
     - `@tabler/icons-react` `^3.36.1`
-- **📊 Charts Library**
+    - `@fontsource-variable/inter` `^5.2.8`
+- **📊 Charts**
     - `recharts` `^3.7.0`
+- **🔄 Data Fetching & Server State**
+    - `@tanstack/react-query` `^5.96.2`
+    - `ofetch` `^1.5.1`
+- **🔥 Backend / Auth**
+    - `firebase` `^12.10.0`
 
-> These dependencies provide the core functionality of the application including UI components, charts, state management, routing, and notifications.
+> These dependencies provide the core functionality of the application including UI components, charts, state management, routing, data fetching, and authentication.
 
 ---
 
@@ -74,20 +80,27 @@ These are tools used for development, linting, type-checking, and building:
 - **⚡ Vite & Plugins**
     - `vite` `^7.3.1`
     - `@vitejs/plugin-react` `^5.1.1`
+    - `@tailwindcss/vite` `^4.2.2`
+    - `vite-tsconfig-paths` `^6.1.1`
 - **🔧 Linting & Formatting**
     - `eslint` `^9.39.1`
     - `@eslint/js` `^9.39.1`
-    - `@antfu/eslint-config` `^7.3.0`
+    - `typescript-eslint` `^8.59.1`
+    - `eslint-plugin-react` `^7.37.5`
+    - `eslint-plugin-react-hooks` `^7.1.1`
+    - `eslint-plugin-import` `^2.32.0`
+    - `eslint-plugin-unused-imports` `^4.4.1`
+    - `eslint-config-prettier` `^10.1.8`
     - `prettier` `^3.8.1`
     - `lint-staged` `^16.2.7`
 - **🎨 CSS & PostCSS**
     - `postcss` `^8.5.6`
-    - `postcss-preset-mantine` `^1.18.0`
     - `postcss-simple-vars` `^7.0.1`
+    - `sass-embedded` `^1.99.0`
 - **🌐 Globals**
     - `globals` `^16.5.0`
 
-> These tools help enforce code quality, enable TypeScript type checking, manage styles, and streamline development workflow.
+> These tools help enforce code quality, enable TypeScript type checking, manage styles, and streamline the development workflow.
 
 ---
 

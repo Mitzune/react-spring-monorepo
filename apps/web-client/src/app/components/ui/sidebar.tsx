@@ -1,7 +1,7 @@
 'use client'
 
+import { IconChevronLeft } from '@tabler/icons-react'
 import { cva, type VariantProps } from 'class-variance-authority'
-import { PanelLeftIcon } from 'lucide-react'
 import { Slot } from 'radix-ui'
 import * as React from 'react'
 import { Button } from 'src/app/components/ui/button'
@@ -249,7 +249,7 @@ function SidebarTrigger({ className, onClick, ...props }: React.ComponentProps<t
 			}}
 			{...props}
 		>
-			<PanelLeftIcon />
+			<IconChevronLeft />
 			<span className="sr-only">Toggle Sidebar</span>
 		</Button>
 	)

@@ -1,19 +1,6 @@
 # React-Spring-Monorepo Starter
 This is a template repository that leverages the benefits of a monorepo setup, combining two different frameworks (React and Spring Boot) and a task runner to bootstrap commands for easier environment management, as well as dynamic running and building.
 
-## 🖼️ App Sample Pictures
-
-Here are some sample screenshots of the application to illustrate the UI and features:
-
-### 🏠 Home Page
-![Home Page Screenshot](./.github/assets/home-preview.png)
-
-### ✏️ Post Page Mobile
-![Post Page Screenshot](./.github/assets/mobile-preview.png)
-
-> 💡 Note: Replace the image paths with the actual location of your screenshots in the project.
-
-
 ## Apps Documentation
 
 This section provides links to the documentation for each application within the monorepo:
