@@ -134,7 +134,8 @@ public class AuthServiceImpl implements AuthService {
     ResponseCookie cookie = ResponseCookie.from("refresh_token", rawToken)
       .httpOnly(true)
       .secure(isCookieSecure)
-      .path("/api/auth/refresh")
+      .path("/")
+      .sameSite("Lax")
       .maxAge(Duration.ofDays(5))
       .sameSite("Strict")
       .build();

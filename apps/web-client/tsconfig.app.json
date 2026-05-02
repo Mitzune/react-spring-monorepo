@@ -25,13 +25,16 @@
 		"noUncheckedSideEffectImports": true,
 
 		/* Path */
-		"baseUrl": "./src",
+		"baseUrl": ".",
 		"paths": {
-			"@app/*": ["./app/*"],
-			"@features/*": ["./features/*"],
-			"@layouts/*": ["./layouts/*"],
-			"@utils/*": ["./utils/*"],
-			"@types/*": ["./types/*"]
+			"@app/*": ["./src/app/*"],
+			"@features/*": ["./src/features/*"],
+			"@layouts/*": ["./src/layouts/*"],
+			"@utils/*": ["./src/utils/*"],
+			"@types/*": ["./src/types/*"],
+			"@routers/*": ["./src/routers/*"],
+			"@ui/*": ["./src/app/components/ui/*"],
+			"@/*": ["./src/*"]
 		}
 	},
 	"include": ["src"]

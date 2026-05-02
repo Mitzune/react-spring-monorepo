@@ -1,28 +1,45 @@
+import type { User } from '@features/user/types/User'
 import type { FirebaseAuthResponse } from '../utils/auth'
-import { notifications } from '@mantine/notifications'
-import { useMutation } from '@tanstack/react-query'
+import { setUser } from '@features/user/store/useUserStore'
 import { Api } from '@utils/Api'
+import { useState } from 'react'
+import { useNavigate } from 'react-router'
+import { setAccessToken } from '../store/useAuthStore'
 
 export function login() {
-	const { mutate, data, isPending } = useMutation({
-		mutationFn: (token: { token: string }) => {
-			return Api.post('/api/auth/Microsoft', token)
-		},
-		onError: () => {
-			notifications.show({ title: 'Warning', message: 'Something went wrong!', color: 'red' })
-		},
-	})
+	const navigate = useNavigate()
+	const [isLoading, setIsLoading] = useState(false)
 
-	const executeLogin = async (provider: () => Promise<FirebaseAuthResponse>) => {
-		const { data: userCredentials, error } = await provider()
+	const executeLogin = async (provider: () => Promise<FirebaseAuthResponse>, ssoType: string) => {
+		try {
+			setIsLoading(true)
+			const { data: userCredentials, error } = await provider()
 
-		if (error || !userCredentials) {
-			notifications.show({ title: 'Warning', message: error ?? 'Something went wrong!', color: 'red' })
-			return
+			if (error || !userCredentials) {
+				// notifications.show({ title: 'Warning', message: error ?? 'Something went wrong!', color: 'red' })
+				return
+			}
+
+			try {
+				const { user, token } = await Api.post<{ user: User; token: string }>(
+					`/api/auth/${ssoType}`,
+					{ ...userCredentials },
+					{ credentials: 'include' },
+				)
+				setAccessToken(token)
+				setUser(user)
+				navigate('/')
+			} catch {
+				setIsLoading(false)
+				// notifications.show({ title: 'Warning', message: 'Something went wrong!', color: 'red' })
+			}
+
+			setIsLoading(false)
+		} catch {
+			setIsLoading(false)
+			// notifications.show({ title: 'Warning', message: 'Something went wrong!', color: 'red' })
 		}
-
-		mutate(userCredentials)
 	}
 
-	return { executeLogin, data, isPending }
+	return { executeLogin, isLoading }
 }

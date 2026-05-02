@@ -1,47 +1,31 @@
-import { Button, Container, Drawer, Flex, Text, ThemeIcon } from '@mantine/core'
-import { useDisclosure } from '@mantine/hooks'
-import { IconBrandAmongUs, IconMenu2 } from '@tabler/icons-react'
-import { useNavigate } from 'react-router'
+import { Avatar, AvatarImage } from '@app/components/ui/avatar'
+import { Button } from '@app/components/ui/button'
+import { useSidebar } from '@app/components/ui/sidebar'
+import { useUserStore } from '@features/user/store/useUserStore'
+import { IconMenu } from '@tabler/icons-react'
 
 export function Header() {
-	const navigate = useNavigate()
-	const [opened, { open, close }] = useDisclosure(false)
+	const user = useUserStore((state) => state.user)
+	const { toggleSidebar, isMobile } = useSidebar()
 
 	return (
-		<>
-			<header>
-				<Container size={1400} p={12}>
-					<Flex align={'center'} justify={'space-between'}>
-						<a onClick={() => navigate('/')}>
-							<Flex gap={'sm'} align={'center'}>
-								<ThemeIcon>
-									<IconBrandAmongUs />
-								</ThemeIcon>
+		<header className="h-16 p-2 px-4 bg-sidebar [--radius:var(--radius-xl)] text-sidebar-foreground w-full flex align-center justify-between">
+			{isMobile && (
+				<Button onClick={() => toggleSidebar()} type="button" variant={'ghost'} className="my-auto">
+					<IconMenu className="size-4" />
+				</Button>
+			)}
 
-								<Text c={'blue'} fw={800} size="xl">
-									Cool company
-								</Text>
-							</Flex>
-						</a>
+			<button className="flex gap-4 items-center">
+				<Avatar>
+					<AvatarImage src="https://github.com/shadcn.png" />
+				</Avatar>
 
-						<Button hiddenFrom="lg" type="button" size="compact-lg" bg="transparent" onClick={open} p={0}>
-							<ThemeIcon bg={'transparent'} c={'blue'} size={'xl'}>
-								<IconMenu2 />
-							</ThemeIcon>
-						</Button>
-					</Flex>
-				</Container>
-			</header>
-
-			<Drawer.Root hiddenFrom="lg" opened={opened} onClose={close} size={'xs'} position="right">
-				<Drawer.Overlay />
-				<Drawer.Content>
-					<Drawer.Header>
-						<Text size="lg">Navigations</Text>
-					</Drawer.Header>
-					<Drawer.Body></Drawer.Body>
-				</Drawer.Content>
-			</Drawer.Root>
-		</>
+				<div className="justify-start flex-col items-start hidden md:flex">
+					<p className="font-semibold text-md">{user?.nickname}</p>
+					<p className="text-sm text-secondary-foreground/60">{user?.email}</p>
+				</div>
+			</button>
+		</header>
 	)
 }

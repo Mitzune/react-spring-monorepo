@@ -1,35 +1,34 @@
-import { Button, Card, Flex } from '@mantine/core'
-import { IconBrandWindows } from '@tabler/icons-react'
+import { Button } from '@app/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@app/components/ui/card'
 import { login } from './api/loginUser'
-import { FormHeader } from './components/FormHeader'
-import { loginWithMicrosoft } from './utils/auth'
+import { ssoDetails } from './constant/SsoDetails'
+import { loginWithGoogle } from './utils/auth'
 
 export function AuthView() {
-	const { executeLogin, data, isPending } = login()
+	const { executeLogin, isLoading } = login()
 
 	return (
-		<Flex>
-			<Card w="100%" shadow="sm" padding="md" radius="md" withBorder>
-				<form>
-					<FormHeader title="Business App" subText="Login to continue." />
+		<main className="flex w-full items-center justify-center">
+			<Card className="w-100">
+				<CardHeader>
+					<CardTitle>Login to your account</CardTitle>
+					<CardDescription>Enter your email below to login to your account</CardDescription>
+				</CardHeader>
 
-					<Flex justify={'center'} mt={24}>
-						<Button
-							variant="outline"
-							w={'75%'}
-							onClick={() => executeLogin(loginWithMicrosoft)}
-							loading={isPending}
-						>
-							<Flex align={'center'} gap={'4'}>
-								<IconBrandWindows size={'24'} />
-								<span>Microsoft</span>
-							</Flex>
+				<CardContent>
+					<form
+						onSubmit={(e) => {
+							e.preventDefault()
+							executeLogin(loginWithGoogle, 'Google')
+						}}
+					>
+						<Button variant={'outline'} className="w-full" isLoading={isLoading} type="submit">
+							{!isLoading && ssoDetails.Google.icon}
+							{ssoDetails.Google.placeholder}
 						</Button>
-					</Flex>
-
-					<pre>{JSON.stringify(data)}</pre>
-				</form>
+					</form>
+				</CardContent>
 			</Card>
-		</Flex>
+		</main>
 	)
 }

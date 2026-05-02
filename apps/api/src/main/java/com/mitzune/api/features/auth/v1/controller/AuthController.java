@@ -37,9 +37,24 @@ public class AuthController {
     );
   }
 
+  @PostMapping("/Google")
+  public ResponseEntity<AuthResponseDto> createAccountWithGoogle(
+    @Valid @RequestBody AuthRequestDto authRequestDto,
+    HttpServletRequest httpServletRequest,
+    HttpServletResponse httpServletResponse
+  ) {
+    AuthRequestDto userRequest = new AuthRequestDto(
+      authRequestDto.token(),
+      AuthProvider.GOOGLE
+    );
+    return ResponseEntity.ok(
+      authService.syncUser(userRequest, httpServletRequest, httpServletResponse)
+    );
+  }
+
   @PostMapping("/refresh")
   public ResponseEntity<AuthResponseDto> refreshTokens(
-    @CookieValue(name = "refresh_token") String refreshToken
+    @Valid @CookieValue(name = "refresh_token") String refreshToken
   ) {
     return ResponseEntity.ok(authService.refreshTokens(refreshToken));
   }

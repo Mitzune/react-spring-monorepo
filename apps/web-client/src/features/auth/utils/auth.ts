@@ -1,5 +1,5 @@
 import { app } from '@utils/firebase'
-import { getAuth, OAuthProvider, signInWithPopup } from 'firebase/auth'
+import { getAuth, GoogleAuthProvider, OAuthProvider, signInWithPopup } from 'firebase/auth'
 
 export interface FirebaseAuthResponse {
 	data: null | { token: string }
@@ -12,6 +12,24 @@ export async function loginWithMicrosoft(): Promise<FirebaseAuthResponse> {
 	provider.setCustomParameters({
 		tenant: import.meta.env.VITE_AZURE_TENANT_ID,
 	})
+
+	const result = await signInWithPopup(auth, provider)
+
+	if (!result.user) {
+		return { data: null, error: 'Error on SSO sign in' }
+	}
+
+	const { user } = result
+
+	return {
+		data: { token: await user.getIdToken() },
+		error: null,
+	}
+}
+
+export async function loginWithGoogle(): Promise<FirebaseAuthResponse> {
+	const auth = getAuth(app)
+	const provider = new GoogleAuthProvider()
 
 	const result = await signInWithPopup(auth, provider)
 
