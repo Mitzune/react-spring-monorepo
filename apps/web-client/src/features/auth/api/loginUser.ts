@@ -1,12 +1,13 @@
-import type { User } from '@features/user/types/User'
-import type { FirebaseAuthResponse } from '../utils/auth'
 import { setUser } from '@features/user/store/useUserStore'
+import type { User } from '@features/user/types/User'
 import { Api } from '@utils/Api'
 import { useState } from 'react'
 import { useNavigate } from 'react-router'
-import { setAccessToken } from '../store/useAuthStore'
 
-export function login() {
+import { setAccessToken } from '../store/useAuthStore'
+import type { FirebaseAuthResponse } from '../utils/auth'
+
+export function useLogin() {
 	const navigate = useNavigate()
 	const [isLoading, setIsLoading] = useState(false)
 

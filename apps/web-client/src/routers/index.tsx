@@ -3,6 +3,7 @@ import { NotFound } from '@features/base/components/not-found/NotFound'
 import { DashboardView } from '@features/dashboard/DashboardView'
 import { DashboardLayout } from '@layouts/dashboard/DashboardLayout'
 import { createBrowserRouter } from 'react-router'
+
 import { userAuthenticate } from './middleware/useAuthenticate'
 
 const router = createBrowserRouter([

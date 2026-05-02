@@ -1,5 +1,5 @@
-import type { FetchOptions } from 'ofetch'
 import { getAccessToken, setAccessToken } from '@features/auth/store/useAuthStore'
+import type { FetchOptions } from 'ofetch'
 import { $fetch, ofetch } from 'ofetch'
 
 function setToken(token: string) {

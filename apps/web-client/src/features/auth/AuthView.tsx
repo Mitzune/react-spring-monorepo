@@ -1,11 +1,12 @@
 import { Button } from '@app/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@app/components/ui/card'
-import { login } from './api/loginUser'
+
+import { useLogin } from './api/loginUser'
 import { ssoDetails } from './constant/SsoDetails'
 import { loginWithGoogle } from './utils/auth'
 
 export function AuthView() {
-	const { executeLogin, isLoading } = login()
+	const { executeLogin, isLoading } = useLogin()
 
 	return (
 		<main className="flex w-full items-center justify-center">

@@ -1,5 +1,6 @@
-import type { User } from '../types/User'
 import { create } from 'zustand'
+
+import type { User } from '../types/User'
 
 interface UseUserStoreState {
 	user: User | null

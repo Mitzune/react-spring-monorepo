@@ -12,6 +12,7 @@ import {
 	SidebarMenuItem,
 } from '@app/components/ui/sidebar'
 import { IconBusinessplan, IconChevronDown } from '@tabler/icons-react'
+
 import { sidebarLinks } from './sidebar.config'
 
 export function AppSidebar() {
@@ -22,8 +23,12 @@ export function AppSidebar() {
 				<p className="text-3xl">Business</p>
 			</SidebarHeader>
 			<SidebarContent>
-				{sidebarLinks.map((sidebarConfig) => (
-					<Collapsible defaultOpen={sidebarConfig.isDefaultOpen} className="group/collapsible">
+				{sidebarLinks.map((sidebarConfig, key) => (
+					<Collapsible
+						key={`sidebarConfig.label-${key}`}
+						defaultOpen={sidebarConfig.isDefaultOpen}
+						className="group/collapsible"
+					>
 						<SidebarGroup>
 							<SidebarGroupLabel asChild>
 								<CollapsibleTrigger>
@@ -34,8 +39,8 @@ export function AppSidebar() {
 							<CollapsibleContent>
 								<SidebarGroupContent>
 									<SidebarMenu>
-										{sidebarConfig.items.map((link) => (
-											<SidebarMenuItem>
+										{sidebarConfig.items.map((link, key) => (
+											<SidebarMenuItem key={`${link.label}-${key}`}>
 												<Button
 													type="button"
 													className="w-full flex align-start justify-start"
