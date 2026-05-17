@@ -3,7 +3,7 @@ package com.mitzune.api.features.user.v1.service.impl;
 import com.google.firebase.auth.FirebaseToken;
 import com.mitzune.api.features.auth.entity.UserIdentity;
 import com.mitzune.api.features.auth.repository.UserIdentityRepository;
-import com.mitzune.api.features.auth.v1.dto.AuthRequestDto;
+import com.mitzune.api.features.auth.v1.enums.AuthProvider;
 import com.mitzune.api.features.user.entity.User;
 import com.mitzune.api.features.user.exception.UserException;
 import com.mitzune.api.features.user.repository.UserRepository;
@@ -28,11 +28,11 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public UserDto createNewUser(
-    AuthRequestDto authRequestDto,
+    AuthProvider authProvider,
     FirebaseToken firebaseToken
   ) {
     UserIdentity userIdentity = new UserIdentity();
-    userIdentity.setAuthProvider(authRequestDto.authProvider());
+    userIdentity.setAuthProvider(authProvider);
 
     userIdentity.setProviderId(firebaseToken.getUid());
     Optional<User> user = userRepository.findByEmail(firebaseToken.getEmail());

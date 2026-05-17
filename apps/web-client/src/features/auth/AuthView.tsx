@@ -20,7 +20,7 @@ export function AuthView() {
 					<form
 						onSubmit={(e) => {
 							e.preventDefault()
-							executeLogin(loginWithGoogle, 'Google')
+							executeLogin(loginWithGoogle, 'google')
 						}}
 					>
 						<Button variant={'outline'} className="w-full" isLoading={isLoading} type="submit">

@@ -48,4 +48,15 @@ public class AuthException extends AppException {
       "Refresh token has expired"
     );
   }
+
+  public static AuthException noSsoAvailable(String provider) {
+    return new AuthException(
+      HttpStatus.NOT_FOUND,
+      "AUTH_006",
+      String.format(
+        "SSO login type '%s' is not supported. Please use a valid provider.",
+        provider
+      )
+    );
+  }
 }

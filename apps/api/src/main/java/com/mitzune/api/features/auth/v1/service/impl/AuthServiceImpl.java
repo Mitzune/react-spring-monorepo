@@ -4,32 +4,25 @@ import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseToken;
 import com.mitzune.api.features.auth.entity.RefreshTokenSession;
-import com.mitzune.api.features.auth.entity.UserIdentity;
 import com.mitzune.api.features.auth.exception.AuthException;
 import com.mitzune.api.features.auth.repository.RefreshTokenSessionRepository;
-import com.mitzune.api.features.auth.repository.UserIdentityRepository;
 import com.mitzune.api.features.auth.v1.dto.AuthRequestDto;
 import com.mitzune.api.features.auth.v1.dto.AuthResponseDto;
+import com.mitzune.api.features.auth.v1.dto.AuthSyncResult;
 import com.mitzune.api.features.auth.v1.dto.AuthTokenResponse;
+import com.mitzune.api.features.auth.v1.enums.AuthProvider;
 import com.mitzune.api.features.auth.v1.service.AuthService;
 import com.mitzune.api.features.auth.v1.service.DeviceService;
+import com.mitzune.api.features.auth.v1.service.UserIdentityService;
 import com.mitzune.api.features.user.entity.User;
-import com.mitzune.api.features.user.v1.dto.UserDto;
 import com.mitzune.api.features.user.v1.mapper.UserMapper;
-import com.mitzune.api.features.user.v1.service.UserService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
-import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -43,23 +36,21 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
-  private final UserIdentityRepository userIdentityRepository;
   private final RefreshTokenSessionRepository refreshTokenSessionRepository;
   private final UserMapper userMapper;
-  private final UserService userService;
   private final JwtEncoder jwtEncoder;
   private final DeviceService deviceService;
+  private final UserIdentityService userIdentityService;
 
-  @Value("${app.security.cookie-secure}")
-  private boolean isCookieSecure;
-
-  private FirebaseToken getUidFromToken(String idToken)
-    throws FirebaseException {
-    FirebaseToken firebaseToken = FirebaseAuth.getInstance().verifyIdToken(
-      idToken
-    );
-
-    return firebaseToken;
+  private FirebaseToken getUidFromToken(String idToken) {
+    try {
+      FirebaseToken firebaseToken = FirebaseAuth.getInstance().verifyIdToken(
+        idToken
+      );
+      return firebaseToken;
+    } catch (FirebaseException e) {
+      throw AuthException.ssoTokenInvalid();
+    }
   }
 
   private String generateToken(Authentication authentication) {
@@ -98,25 +89,16 @@ public class AuthServiceImpl implements AuthService {
     return this.generateToken(authentication);
   }
 
-  private String getRealIp(HttpServletRequest request) {
-    String xff = request.getHeader("X-Forwarded-For");
-    if (xff != null && !xff.isBlank()) {
-      return xff.split(",")[0].trim();
-    }
-    return request.getRemoteAddr();
-  }
-
-  private String createRefreshToken(User user, HttpServletRequest request) {
+  private String createRefreshToken(User user, String ua, String ip) {
     String rawRefreshToken = UUID.randomUUID().toString();
     Instant now = Instant.now();
     RefreshTokenSession refreshTokenSession = new RefreshTokenSession();
 
     // Device logic
-    String ua = request.getHeader("User-Agent");
     refreshTokenSession.setDeviceInfo(deviceService.parseDevice(ua));
 
-    // Ip address
-    refreshTokenSession.setIpAddress(getRealIp(request));
+    // Get IP
+    refreshTokenSession.setIpAddress(ip);
 
     refreshTokenSession.setUser(user);
     refreshTokenSession.setCreatedAt(now);
@@ -127,55 +109,29 @@ public class AuthServiceImpl implements AuthService {
     return rawRefreshToken;
   }
 
-  private void attachRefreshToken(
-    HttpServletResponse response,
-    String rawToken
-  ) {
-    ResponseCookie cookie = ResponseCookie.from("refresh_token", rawToken)
-      .httpOnly(true)
-      .secure(isCookieSecure)
-      .path("/")
-      .sameSite("Lax")
-      .maxAge(Duration.ofDays(5))
-      .sameSite("Strict")
-      .build();
-
-    response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
-  }
-
-  @Transactional
   @Override
-  public AuthResponseDto syncUser(
+  public AuthSyncResult syncUser(
     AuthRequestDto authRequestDto,
-    HttpServletRequest httpServletRequest,
-    HttpServletResponse httpServletResponse
+    AuthProvider authProvider,
+    String ua,
+    String ip
   ) {
-    try {
-      FirebaseToken firebaseToken = getUidFromToken(authRequestDto.token());
-      String uid = firebaseToken.getUid();
+    FirebaseToken firebaseToken = getUidFromToken(authRequestDto.token());
 
-      User user = userIdentityRepository
-        .findByAuthProviderAndProviderId(authRequestDto.authProvider(), uid)
-        .map(UserIdentity::getUser)
-        .orElseGet(() -> {
-          UserDto newUser = userService.createNewUser(
-            authRequestDto,
-            firebaseToken
-          );
+    User user = userIdentityService.getOrCreateUser(
+      authProvider,
+      firebaseToken
+    );
 
-          return userMapper.fromDto(newUser);
-        });
+    String refreshToken = createRefreshToken(user, ua, ip);
 
-      String refreshToken = createRefreshToken(user, httpServletRequest);
-      attachRefreshToken(httpServletResponse, refreshToken);
-
-      return new AuthResponseDto(
+    return new AuthSyncResult(
+      new AuthResponseDto(
         userMapper.toDto(user),
         this.issueToken(user.getId(), user.getUserRole().name())
-      );
-    } catch (FirebaseException e) {
-      throw AuthException.ssoTokenInvalid();
-    }
+      ),
+      refreshToken
+    );
   }
 
   @Transactional

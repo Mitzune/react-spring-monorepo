@@ -1,16 +1,16 @@
 package com.mitzune.api.features.auth.v1.service;
 
 import com.mitzune.api.features.auth.v1.dto.AuthRequestDto;
-import com.mitzune.api.features.auth.v1.dto.AuthResponseDto;
+import com.mitzune.api.features.auth.v1.dto.AuthSyncResult;
 import com.mitzune.api.features.auth.v1.dto.AuthTokenResponse;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import com.mitzune.api.features.auth.v1.enums.AuthProvider;
 
 public interface AuthService {
-  AuthResponseDto syncUser(
+  AuthSyncResult syncUser(
     AuthRequestDto authRequestDto,
-    HttpServletRequest httpServletRequest,
-    HttpServletResponse httpServletResponse
+    AuthProvider authProvider,
+    String ua,
+    String ip
   );
 
   AuthTokenResponse refreshTokens(String refreshToken);
