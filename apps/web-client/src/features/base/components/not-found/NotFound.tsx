@@ -6,7 +6,7 @@ export function NotFound() {
 	const navigate = useNavigate()
 
 	return (
-		<div className="w-full flex flex-col">
+		<div className="flex w-full flex-col">
 			<IconMoodPuzzled />
 
 			<h1>404 Page not found</h1>

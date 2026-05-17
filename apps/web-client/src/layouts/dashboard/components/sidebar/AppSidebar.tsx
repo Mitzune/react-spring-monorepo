@@ -18,9 +18,9 @@ import { sidebarLinks } from './sidebar.config'
 export function AppSidebar() {
 	return (
 		<Sidebar>
-			<SidebarHeader className="h-16 flex flex-row items-center justify-center">
-				<IconBusinessplan />
-				<p className="text-3xl">Business</p>
+			<SidebarHeader className="flex h-16 flex-row items-center justify-center">
+				<IconBusinessplan className="text-primary" />
+				<p className="text-xl">Business</p>
 			</SidebarHeader>
 			<SidebarContent>
 				{sidebarLinks.map((sidebarConfig, key) => (
@@ -33,7 +33,10 @@ export function AppSidebar() {
 							<SidebarGroupLabel asChild>
 								<CollapsibleTrigger>
 									{sidebarConfig.label}
-									<IconChevronDown className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180" />
+									<IconChevronDown
+										className="ml-auto transition-transform
+											group-data-[state=open]/collapsible:rotate-180"
+									/>
 								</CollapsibleTrigger>
 							</SidebarGroupLabel>
 							<CollapsibleContent>
@@ -43,7 +46,7 @@ export function AppSidebar() {
 											<SidebarMenuItem key={`${link.label}-${key}`}>
 												<Button
 													type="button"
-													className="w-full flex align-start justify-start"
+													className="align-start flex w-full justify-start"
 													variant={'ghost'}
 												>
 													{<link.icon />}

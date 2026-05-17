@@ -11,7 +11,10 @@ export function Header() {
 	const { toggleSidebar, isMobile } = useSidebar()
 
 	return (
-		<header className="h-16 p-2 px-4 bg-sidebar [--radius:var(--radius-xl)] text-sidebar-foreground w-full flex align-center justify-between">
+		<header
+			className="text-sidebar-foreground align-center flex h-16 w-full justify-between p-2 px-4
+				[--radius:var(--radius-xl)]"
+		>
 			<div>
 				{isMobile && (
 					<Button onClick={() => toggleSidebar()} type="button" variant={'ghost'} className="my-auto">
@@ -22,14 +25,14 @@ export function Header() {
 
 			<BaseDropDown
 				header={
-					<button className="flex gap-4 items-center">
+					<button className="flex items-center gap-4">
 						<Avatar>
 							<AvatarImage src="https://github.com/shadcn.png" />
 						</Avatar>
 
-						<div className="justify-start flex-col items-start hidden md:flex">
-							<p className="font-semibold text-md">{user?.nickname}</p>
-							<p className="text-sm text-secondary-foreground/60">{user?.email}</p>
+						<div className="hidden flex-col items-start justify-start md:flex">
+							<p className="text-md font-semibold">{user?.nickname}</p>
+							<p className="text-secondary-foreground/60 text-sm">{user?.email}</p>
 						</div>
 					</button>
 				}
