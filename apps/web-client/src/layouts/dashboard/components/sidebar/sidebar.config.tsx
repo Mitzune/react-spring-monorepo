@@ -15,14 +15,17 @@ export const sidebarLinks = [
 			{
 				icon: IconDashboard,
 				label: 'Dashboard',
+				path: '/',
 			},
 			{
 				icon: IconUsers,
 				label: 'Customers',
+				path: '/customers',
 			},
 			{
 				icon: IconReportAnalytics,
 				label: 'Reports',
+				path: '/reports',
 			},
 		],
 	},
@@ -33,14 +36,17 @@ export const sidebarLinks = [
 			{
 				icon: IconPackage,
 				label: 'All Items',
+				path: '/reports',
 			},
 			{
 				icon: IconCategory,
 				label: 'Categories',
+				path: '/reports',
 			},
 			{
 				icon: IconAlertTriangle,
 				label: 'Low Stock',
+				path: '/reports',
 			},
 		],
 	},

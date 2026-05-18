@@ -1,3 +1,5 @@
+'use client'
+
 import { IconX } from '@tabler/icons-react'
 import { Dialog as SheetPrimitive } from 'radix-ui'
 import * as React from 'react'
@@ -26,7 +28,7 @@ function SheetOverlay({ className, ...props }: React.ComponentProps<typeof Sheet
 			data-slot="sheet-overlay"
 			className={cn(
 				`data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0 fixed inset-0
-				z-50 bg-black/30 duration-100 supports-backdrop-filter:backdrop-blur-sm`,
+				z-50 bg-black/10 duration-100 supports-backdrop-filter:backdrop-blur-xs`,
 				className,
 			)}
 			{...props}
@@ -58,7 +60,7 @@ function SheetContent({
 					data-[side=bottom]:data-closed:slide-out-to-bottom-10
 					data-[side=left]:data-closed:slide-out-to-left-10
 					data-[side=right]:data-closed:slide-out-to-right-10 data-[side=top]:data-closed:slide-out-to-top-10
-					fixed z-50 flex flex-col bg-clip-padding text-sm shadow-xl transition duration-200 ease-in-out
+					fixed z-50 flex flex-col gap-4 bg-clip-padding text-sm shadow-lg transition duration-200 ease-in-out
 					data-[side=bottom]:inset-x-0 data-[side=bottom]:bottom-0 data-[side=bottom]:h-auto
 					data-[side=bottom]:border-t data-[side=left]:inset-y-0 data-[side=left]:left-0
 					data-[side=left]:h-full data-[side=left]:w-3/4 data-[side=left]:border-r data-[side=right]:inset-y-0
@@ -72,7 +74,7 @@ function SheetContent({
 				{children}
 				{showCloseButton && (
 					<SheetPrimitive.Close data-slot="sheet-close" asChild>
-						<Button variant="ghost" className="bg-secondary absolute top-4 right-4" size="icon-sm">
+						<Button variant="ghost" className="absolute top-3 right-3" size="icon-sm">
 							<IconX />
 							<span className="sr-only">Close</span>
 						</Button>
@@ -84,11 +86,11 @@ function SheetContent({
 }
 
 function SheetHeader({ className, ...props }: React.ComponentProps<'div'>) {
-	return <div data-slot="sheet-header" className={cn('flex flex-col gap-1.5 p-6', className)} {...props} />
+	return <div data-slot="sheet-header" className={cn('flex flex-col gap-0.5 p-4', className)} {...props} />
 }
 
 function SheetFooter({ className, ...props }: React.ComponentProps<'div'>) {
-	return <div data-slot="sheet-footer" className={cn('mt-auto flex flex-col gap-2 p-6', className)} {...props} />
+	return <div data-slot="sheet-footer" className={cn('mt-auto flex flex-col gap-2 p-4', className)} {...props} />
 }
 
 function SheetTitle({ className, ...props }: React.ComponentProps<typeof SheetPrimitive.Title>) {

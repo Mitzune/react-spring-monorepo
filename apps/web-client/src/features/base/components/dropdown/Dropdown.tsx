@@ -10,7 +10,7 @@ export function BaseDropDown({ header, content }: BaseDropdownType) {
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>{header}</DropdownMenuTrigger>
 
-			<DropdownMenuContent>{content}</DropdownMenuContent>
+			<DropdownMenuContent className="rounded-md">{content}</DropdownMenuContent>
 		</DropdownMenu>
 	)
 }

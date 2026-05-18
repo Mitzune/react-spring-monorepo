@@ -1,5 +1,3 @@
-'use client'
-
 import { Tooltip as TooltipPrimitive } from 'radix-ui'
 import * as React from 'react'
 import { cn } from 'src/app/lib/utils'
@@ -34,9 +32,9 @@ function TooltipContent({
 					data-[state=delayed-open]:fade-in-0 data-[state=delayed-open]:zoom-in-95 data-open:animate-in
 					data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0
 					data-closed:zoom-out-95 z-50 inline-flex w-fit max-w-xs
-					origin-(--radix-tooltip-content-transform-origin) items-center gap-1.5 rounded-xl px-3 py-1.5
+					origin-(--radix-tooltip-content-transform-origin) items-center gap-1.5 rounded-md px-3 py-1.5
 					text-xs has-data-[slot=kbd]:pr-1.5 **:data-[slot=kbd]:relative **:data-[slot=kbd]:isolate
-					**:data-[slot=kbd]:z-50 **:data-[slot=kbd]:rounded-lg`,
+					**:data-[slot=kbd]:z-50 **:data-[slot=kbd]:rounded-sm`,
 					className,
 				)}
 				{...props}
@@ -44,7 +42,7 @@ function TooltipContent({
 				{children}
 				<TooltipPrimitive.Arrow
 					className="bg-foreground fill-foreground z-50 size-2.5 translate-y-[calc(-50%_-_2px)] rotate-45
-						rounded-[2px] data-[side=left]:translate-x-[-1.5px] data-[side=right]:translate-x-[1.5px]"
+						rounded-[2px]"
 				/>
 			</TooltipPrimitive.Content>
 		</TooltipPrimitive.Portal>
