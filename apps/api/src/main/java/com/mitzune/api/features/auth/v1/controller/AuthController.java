@@ -6,6 +6,7 @@ import com.mitzune.api.features.auth.v1.dto.AuthRequestDto;
 import com.mitzune.api.features.auth.v1.dto.AuthResponseDto;
 import com.mitzune.api.features.auth.v1.dto.AuthSyncResult;
 import com.mitzune.api.features.auth.v1.dto.AuthTokenResponse;
+import com.mitzune.api.features.auth.v1.dto.RefreshResponse;
 import com.mitzune.api.features.auth.v1.enums.AuthProvider;
 import com.mitzune.api.features.auth.v1.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -56,8 +57,26 @@ public class AuthController {
 
   @PostMapping("/refresh")
   public ResponseEntity<AuthTokenResponse> refreshTokens(
-    @CookieValue(name = "refresh_token") String refreshToken
+    @CookieValue(name = "refresh_token") String refreshToken,
+    HttpServletRequest httpServletRequest,
+    HttpServletResponse httpServletResponse
   ) {
-    return ResponseEntity.ok(authService.refreshTokens(refreshToken));
+    String ua = httpServletRequest.getHeader("User-Agent");
+    String ip = webUtil.getRealIp(httpServletRequest);
+
+    RefreshResponse authTokenResponse = authService.rotateRefreshToken(
+      refreshToken,
+      ua,
+      ip
+    );
+
+    cookieUtil.attachRefreshToken(
+      httpServletResponse,
+      authTokenResponse.refreshToken()
+    );
+
+    return ResponseEntity.ok(
+      new AuthTokenResponse(authTokenResponse.accessToken())
+    );
   }
 }

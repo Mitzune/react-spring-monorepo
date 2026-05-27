@@ -13,6 +13,9 @@ public class CookieUtil {
   @Value("${app.security.cookie-secure}")
   private boolean isCookieSecure;
 
+  @Value("${auth.refresh-token.ttl-days}")
+  private int tokenTtlDays;
+
   public void attachRefreshToken(
     HttpServletResponse response,
     String rawToken
@@ -20,8 +23,8 @@ public class CookieUtil {
     ResponseCookie cookie = ResponseCookie.from("refresh_token", rawToken)
       .httpOnly(true)
       .secure(isCookieSecure)
-      .path("/api/auth/refresh ")
-      .maxAge(Duration.ofDays(5))
+      .path("/api/auth/refresh")
+      .maxAge(Duration.ofDays(tokenTtlDays))
       .sameSite("Strict")
       .build();
 

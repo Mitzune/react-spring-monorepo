@@ -1,15 +1,15 @@
 package com.mitzune.api.features.auth.v1.service.impl;
 
-import com.google.firebase.FirebaseException;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseToken;
+import com.mitzune.api.core.util.FirebaseUtil;
 import com.mitzune.api.features.auth.entity.RefreshTokenSession;
 import com.mitzune.api.features.auth.exception.AuthException;
 import com.mitzune.api.features.auth.repository.RefreshTokenSessionRepository;
 import com.mitzune.api.features.auth.v1.dto.AuthRequestDto;
 import com.mitzune.api.features.auth.v1.dto.AuthResponseDto;
 import com.mitzune.api.features.auth.v1.dto.AuthSyncResult;
-import com.mitzune.api.features.auth.v1.dto.AuthTokenResponse;
+import com.mitzune.api.features.auth.v1.dto.RefreshResponse;
+import com.mitzune.api.features.auth.v1.dto.RefreshTokenPair;
 import com.mitzune.api.features.auth.v1.enums.AuthProvider;
 import com.mitzune.api.features.auth.v1.service.AuthService;
 import com.mitzune.api.features.auth.v1.service.DeviceService;
@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -41,17 +43,7 @@ public class AuthServiceImpl implements AuthService {
   private final JwtEncoder jwtEncoder;
   private final DeviceService deviceService;
   private final UserIdentityService userIdentityService;
-
-  private FirebaseToken getUidFromToken(String idToken) {
-    try {
-      FirebaseToken firebaseToken = FirebaseAuth.getInstance().verifyIdToken(
-        idToken
-      );
-      return firebaseToken;
-    } catch (FirebaseException e) {
-      throw AuthException.ssoTokenInvalid();
-    }
-  }
+  private final FirebaseUtil firebaseUtil;
 
   private String generateToken(Authentication authentication) {
     Instant now = Instant.now();
@@ -75,7 +67,7 @@ public class AuthServiceImpl implements AuthService {
     ).getTokenValue();
   }
 
-  private String issueToken(UUID id, String role) {
+  private String issueAccessToken(UUID id, String role) {
     List<SimpleGrantedAuthority> authorities = List.of(
       new SimpleGrantedAuthority(role)
     );
@@ -89,26 +81,36 @@ public class AuthServiceImpl implements AuthService {
     return this.generateToken(authentication);
   }
 
-  private String createRefreshToken(User user, String ua, String ip) {
-    String rawRefreshToken = UUID.randomUUID().toString();
+  @Value("${auth.refresh-token.ttl-days}")
+  private int tokenTtlDays;
+
+  private RefreshTokenSession buildSession(
+    User user,
+    RefreshTokenPair pair,
+    String ua,
+    String ip
+  ) {
     Instant now = Instant.now();
-    RefreshTokenSession refreshTokenSession = new RefreshTokenSession();
-
-    // Device logic
-    refreshTokenSession.setDeviceInfo(deviceService.parseDevice(ua));
-
-    // Get IP
-    refreshTokenSession.setIpAddress(ip);
-
-    refreshTokenSession.setUser(user);
-    refreshTokenSession.setCreatedAt(now);
-    refreshTokenSession.setTokenHash(rawRefreshToken);
-    refreshTokenSession.setExpiresAt(now.plus(5, ChronoUnit.DAYS));
-    refreshTokenSessionRepository.save(refreshTokenSession);
-
-    return rawRefreshToken;
+    RefreshTokenSession session = new RefreshTokenSession();
+    session.setUser(user);
+    session.setDeviceInfo(deviceService.parseDevice(ua));
+    session.setCreatedIpAddress(ip);
+    session.setLastIpAddressUsed(ip);
+    session.setCreatedAt(now);
+    session.setLastUsedAt(now);
+    session.setTokenHash(pair.tokenHash());
+    session.setExpiresAt(now.plus(tokenTtlDays, ChronoUnit.DAYS));
+    return session;
   }
 
+  private RefreshTokenPair createRefreshToken() {
+    String rawRefreshToken = UUID.randomUUID().toString();
+    String hash = DigestUtils.sha256Hex(rawRefreshToken);
+
+    return new RefreshTokenPair(rawRefreshToken, hash);
+  }
+
+  @Transactional
   @Override
   public AuthSyncResult syncUser(
     AuthRequestDto authRequestDto,
@@ -116,48 +118,78 @@ public class AuthServiceImpl implements AuthService {
     String ua,
     String ip
   ) {
-    FirebaseToken firebaseToken = getUidFromToken(authRequestDto.token());
+    FirebaseToken firebaseToken = firebaseUtil.verifyIdToken(
+      authRequestDto.token()
+    );
 
     User user = userIdentityService.getOrCreateUser(
       authProvider,
       firebaseToken
     );
 
-    String refreshToken = createRefreshToken(user, ua, ip);
+    RefreshTokenPair refreshTokenPair = createRefreshToken();
+    RefreshTokenSession refreshTokenSession = buildSession(
+      user,
+      refreshTokenPair,
+      ua,
+      ip
+    );
+    refreshTokenSessionRepository.save(refreshTokenSession);
 
     return new AuthSyncResult(
       new AuthResponseDto(
         userMapper.toDto(user),
-        this.issueToken(user.getId(), user.getUserRole().name())
+        this.issueAccessToken(user.getId(), user.getUserRole().name())
       ),
-      refreshToken
+      refreshTokenPair.rawToken()
     );
   }
 
   @Transactional
   @Override
-  public AuthTokenResponse refreshTokens(String refreshToken) {
-    if (refreshToken.isEmpty()) {
+  public RefreshResponse rotateRefreshToken(
+    String refreshToken,
+    String ua,
+    String ip
+  ) {
+    if (refreshToken == null || refreshToken.isBlank()) {
       throw AuthException.noRefreshToken();
     }
 
-    RefreshTokenSession refreshTokenSession = refreshTokenSessionRepository
-      .findByTokenHash(refreshToken)
-      .orElseThrow(() -> AuthException.refreshTokenNotFound());
+    String hash = DigestUtils.sha256Hex(refreshToken);
+    RefreshTokenSession oldSession = refreshTokenSessionRepository
+      .findByTokenHash(hash)
+      .orElseThrow(AuthException::refreshTokenNotFound);
 
-    if (refreshTokenSession.getRevokedAt() != null) {
+    if (oldSession.getRevokedAt() != null) {
       throw AuthException.refreshTokenRevoked();
     }
 
-    if (refreshTokenSession.getExpiresAt().isBefore(Instant.now())) {
-      refreshTokenSessionRepository.delete(refreshTokenSession);
+    Instant now = Instant.now();
+    if (oldSession.getExpiresAt().isBefore(now)) {
+      refreshTokenSessionRepository.delete(oldSession);
       throw AuthException.refreshTokenExpired();
     }
 
-    User user = refreshTokenSession.getUser();
+    User user = oldSession.getUser();
 
-    return new AuthTokenResponse(
-      this.issueToken(user.getId(), user.getUserRole().name())
+    oldSession.setRevokedAt(now);
+    oldSession.setLastUsedAt(now);
+    oldSession.setLastIpAddressUsed(ip);
+    refreshTokenSessionRepository.save(oldSession);
+
+    RefreshTokenPair refreshTokenPair = createRefreshToken();
+    RefreshTokenSession refreshTokenSession = buildSession(
+      user,
+      refreshTokenPair,
+      ua,
+      ip
+    );
+    refreshTokenSessionRepository.save(refreshTokenSession);
+
+    return new RefreshResponse(
+      this.issueAccessToken(user.getId(), user.getUserRole().name()),
+      refreshTokenPair.rawToken()
     );
   }
 }

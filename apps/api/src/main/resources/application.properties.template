@@ -1,9 +1,17 @@
 spring.application.name=
 server.port=
 
+# Db
 spring.datasource.driver-class-name=
 spring.datasource.url=jdbc:
 spring.datasource.username=
 spring.datasource.password=
 
+# Dev-tools
 spring.jpa.hibernate.ddl-auto=update
+
+# Authentication
+rsa.private-key=
+rsa.public-key=
+app.security.cookie-secure=
+auth.refresh-token.ttl-days=

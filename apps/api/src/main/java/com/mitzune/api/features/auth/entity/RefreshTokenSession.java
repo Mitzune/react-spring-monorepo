@@ -1,5 +1,6 @@
 package com.mitzune.api.features.auth.entity;
 
+import com.mitzune.api.core.entity.BaseEntity;
 import com.mitzune.api.features.user.entity.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -15,15 +16,17 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Table(name = "refresh_token_sessions")
+@SQLRestriction("deleted_at IS NULL")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 @Builder
-public class RefreshTokenSession {
+public class RefreshTokenSession extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,14 +41,17 @@ public class RefreshTokenSession {
   @Column
   private Instant revokedAt;
 
-  @Column(nullable = false)
-  private Instant createdAt;
-
   @Column(length = 255)
   private String deviceInfo;
 
   @Column(length = 64)
-  private String ipAddress;
+  private String createdIpAddress;
+
+  @Column(name = "last_ip_address_used")
+  private String lastIpAddressUsed;
+
+  @Column(name = "last_used_at")
+  private Instant lastUsedAt;
 
   @ManyToOne
   @JoinColumn(name = "user_id", nullable = false)
