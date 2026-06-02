@@ -9,9 +9,9 @@ import com.mitzune.api.features.user.entity.User;
 import com.mitzune.api.features.user.v1.dto.UserDto;
 import com.mitzune.api.features.user.v1.mapper.UserMapper;
 import com.mitzune.api.features.user.v1.service.UserService;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor

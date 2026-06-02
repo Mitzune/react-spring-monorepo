@@ -26,23 +26,35 @@ const apiClient = ofetch.create({
 		const { response, options, request } = context
 
 		if (response?.status === 401) {
-			const { token } = await $fetch<{ token: string }>(`${options.baseURL}/api/auth/refresh`, {
-				method: 'POST',
-				credentials: 'include',
-			})
+			let accessToken: string | undefined
 
-			if (!token) {
+			try {
+				const { accessToken: token } = await $fetch<{ accessToken: string }>(
+					`${options.baseURL}/api/v1/auth/refresh`,
+					{
+						method: 'POST',
+						credentials: 'include',
+					},
+				)
+
+				accessToken = token
+
+				if (!accessToken) {
+					throw new Error('Missing access token in refresh response')
+				}
+			} catch (e) {
+				console.error(e)
 				return
 			}
 
-			setToken(token)
+			setToken(accessToken)
 
 			try {
 				await $fetch(request, {
 					...options,
 					headers: {
 						...options.headers,
-						Authorization: `Bearer ${token}`,
+						Authorization: `Bearer ${accessToken}`,
 					},
 					retry: false,
 					onResponse(ctx: AnyObject) {

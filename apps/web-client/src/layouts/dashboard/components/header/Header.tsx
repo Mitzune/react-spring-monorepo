@@ -3,9 +3,10 @@ import { Button } from '@app/components/ui/button'
 import { DropdownMenuItem } from '@app/components/ui/dropdown-menu'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@app/components/ui/input-group'
 import { Kbd } from '@app/components/ui/kbd'
+import { logoutUser } from '@features/auth/api/logoutUser'
 import { BaseDropDown } from '@features/base/components/dropdown/Dropdown'
 import { useUserStore } from '@features/user/store/useUserStore'
-import { IconBell, IconSettings, IconUser } from '@tabler/icons-react'
+import { IconBell, IconLogout2, IconSettings, IconUser } from '@tabler/icons-react'
 
 export function Header() {
 	const user = useUserStore((state) => state.user)
@@ -52,6 +53,11 @@ export function Header() {
 							<DropdownMenuItem>
 								<IconSettings />
 								Settings
+							</DropdownMenuItem>
+
+							<DropdownMenuItem onClick={() => logoutUser()}>
+								<IconLogout2 />
+								Logout
 							</DropdownMenuItem>
 						</>
 					}

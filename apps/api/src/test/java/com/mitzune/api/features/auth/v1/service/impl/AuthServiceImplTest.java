@@ -193,6 +193,11 @@ class AuthServiceImplTest {
       assertNotNull(result);
       assertNotNull(result.accessToken());
       assertNotNull(result.refreshToken());
+
+      verify(refreshTokenSessionRepository).findByTokenHash(TOKEN_HASH);
+      verify(refreshTokenSessionRepository).saveAndFlush(
+        any(RefreshTokenSession.class)
+      );
     }
 
     @Test
@@ -216,7 +221,7 @@ class AuthServiceImplTest {
       assertEquals("Refresh token has expired", authException.getMessage());
 
       verify(refreshTokenSessionRepository).findByTokenHash(TOKEN_HASH);
-      verify(refreshTokenSessionRepository, never()).save(
+      verify(refreshTokenSessionRepository, never()).saveAndFlush(
         any(RefreshTokenSession.class)
       );
     }
@@ -243,8 +248,7 @@ class AuthServiceImplTest {
       assertEquals("Refresh token is revoked", authException.getMessage());
 
       verify(refreshTokenSessionRepository).findByTokenHash(TOKEN_HASH);
-      verify(refreshTokenSessionRepository, never()).delete(expiredSession);
-      verify(refreshTokenSessionRepository, never()).save(
+      verify(refreshTokenSessionRepository, never()).saveAndFlush(
         any(RefreshTokenSession.class)
       );
     }
@@ -259,9 +263,34 @@ class AuthServiceImplTest {
       assertEquals("Refresh token not found", authException.getMessage());
 
       verify(refreshTokenSessionRepository).findByTokenHash(anyString());
-      verify(refreshTokenSessionRepository, never()).delete(
+      verify(refreshTokenSessionRepository, never()).saveAndFlush(
         any(RefreshTokenSession.class)
       );
+    }
+
+    @Test
+    @DisplayName("Refresh token was reused")
+    void used_rotated_refresh_token() {
+      Instant now = Instant.now();
+
+      RefreshTokenSession expiredSession = RefreshTokenSession.builder()
+        .user(mockUser)
+        .expiresAt(now.plus(1, ChronoUnit.DAYS))
+        .familyId(TOKEN_HASH) // Random generated family id
+        .rotatedAt(now)
+        .build();
+
+      when(
+        refreshTokenSessionRepository.findByTokenHash(TOKEN_HASH)
+      ).thenReturn(Optional.of(expiredSession));
+
+      AuthException authException = assertThrows(AuthException.class, () ->
+        authService.rotateRefreshToken(TOKEN, USER_AGENT, IP)
+      );
+
+      assertEquals("Refresh token was reused", authException.getMessage());
+
+      verify(refreshTokenSessionRepository).findByTokenHash(anyString());
       verify(refreshTokenSessionRepository, never()).save(
         any(RefreshTokenSession.class)
       );

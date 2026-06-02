@@ -2,6 +2,7 @@ package com.mitzune.api.features.auth.v1.controller;
 
 import com.mitzune.api.core.util.CookieUtil;
 import com.mitzune.api.core.util.WebUtil;
+import com.mitzune.api.features.auth.exception.AuthException;
 import com.mitzune.api.features.auth.v1.dto.AuthRequestDto;
 import com.mitzune.api.features.auth.v1.dto.AuthResponseDto;
 import com.mitzune.api.features.auth.v1.dto.AuthSyncResult;
@@ -22,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(path = "/api/auth")
+@RequestMapping(path = "/api/v1/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
@@ -57,10 +58,14 @@ public class AuthController {
 
   @PostMapping("/refresh")
   public ResponseEntity<AuthTokenResponse> refreshTokens(
-    @CookieValue(name = "refresh_token") String refreshToken,
+    @CookieValue(name = "refresh_token", required = false) String refreshToken,
     HttpServletRequest httpServletRequest,
     HttpServletResponse httpServletResponse
   ) {
+    if (refreshToken == null || refreshToken.isBlank()) {
+      throw AuthException.noRefreshToken();
+    }
+
     String ua = httpServletRequest.getHeader("User-Agent");
     String ip = webUtil.getRealIp(httpServletRequest);
 
@@ -78,5 +83,23 @@ public class AuthController {
     return ResponseEntity.ok(
       new AuthTokenResponse(authTokenResponse.accessToken())
     );
+  }
+
+  @PostMapping("/logout")
+  public ResponseEntity<Void> logout(
+    @CookieValue(name = "refresh_token", required = false) String refreshToken,
+    HttpServletRequest httpServletRequest,
+    HttpServletResponse httpServletResponse
+  ) {
+    if (refreshToken == null || refreshToken.isBlank()) {
+      throw AuthException.noRefreshToken();
+    }
+
+    String ip = webUtil.getRealIp(httpServletRequest);
+
+    authService.logoutUser(refreshToken, ip);
+    cookieUtil.clearRefreshCookie(httpServletResponse);
+
+    return ResponseEntity.ok().build();
   }
 }

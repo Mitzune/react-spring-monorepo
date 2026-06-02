@@ -17,11 +17,11 @@ export function AppSidebar() {
 
 	return (
 		<Sidebar>
-			<SidebarHeader className="flex h-16 flex-row items-center justify-center">
+			<SidebarHeader className="flex h-16 flex-row items-center justify-center p-4">
 				<IconBusinessplan className="text-primary" />
 				<p className="text-xl">Business</p>
 			</SidebarHeader>
-			<SidebarContent>
+			<SidebarContent className="p-4">
 				{sidebarLinks.map((sidebarConfig, key) => (
 					<SidebarMenu key={`sidebarConfig-${sidebarConfig.label}-${key}`} className="space-x-1">
 						{sidebarConfig.items.map((link, key) => (

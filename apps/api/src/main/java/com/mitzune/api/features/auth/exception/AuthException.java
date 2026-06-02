@@ -59,4 +59,12 @@ public class AuthException extends AppException {
       )
     );
   }
+
+  public static AuthException refreshTokenReused() {
+    return new AuthException(
+      HttpStatus.UNAUTHORIZED,
+      "AUTH_007",
+      "Refresh token was reused"
+    );
+  }
 }

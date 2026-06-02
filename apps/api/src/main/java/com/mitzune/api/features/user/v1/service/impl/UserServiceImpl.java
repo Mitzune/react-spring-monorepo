@@ -11,6 +11,7 @@ import com.mitzune.api.features.user.v1.dto.UserDto;
 import com.mitzune.api.features.user.v1.enums.UserRole;
 import com.mitzune.api.features.user.v1.mapper.UserMapper;
 import com.mitzune.api.features.user.v1.service.UserService;
+import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,7 @@ public class UserServiceImpl implements UserService {
     AuthProvider authProvider,
     FirebaseToken firebaseToken
   ) {
+    Instant now = Instant.now();
     UserIdentity userIdentity = new UserIdentity();
     userIdentity.setAuthProvider(authProvider);
 
@@ -51,6 +53,8 @@ public class UserServiceImpl implements UserService {
     createUser.setDisplayName(firebaseToken.getName());
     createUser.setEmail(firebaseToken.getEmail());
     createUser.setUserRole(UserRole.EMPLOYEE);
+    createUser.setCreatedAt(now);
+    createUser.setUpdatedAt(now);
 
     User savedUser = userRepository.save(createUser);
 

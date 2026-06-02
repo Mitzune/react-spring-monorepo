@@ -14,12 +14,12 @@ const router = createBrowserRouter([
 	{
 		path: '/login',
 		index: true,
-		middleware: [userAuthenticate],
+		loader: userAuthenticate,
 		element: <AuthView />,
 	},
 	{
 		path: '/',
-		middleware: [userAuthenticate],
+		loader: userAuthenticate,
 		element: <DashboardLayout />,
 		children: [
 			{

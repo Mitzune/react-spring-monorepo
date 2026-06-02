@@ -24,7 +24,7 @@ export function useLogin() {
 
 			try {
 				const { user, token } = await Api.post<{ user: User; token: string }>(
-					`/api/auth/${ssoType}`,
+					`/api/v1/auth/${ssoType}`,
 					{ ...userCredentials },
 					{ credentials: 'include' },
 				)

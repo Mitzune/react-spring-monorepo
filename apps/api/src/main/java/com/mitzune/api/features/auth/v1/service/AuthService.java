@@ -14,4 +14,6 @@ public interface AuthService {
   );
 
   RefreshResponse rotateRefreshToken(String refreshToken, String ua, String ip);
+
+  void logoutUser(String refreshToken, String ip);
 }

@@ -50,8 +50,11 @@ public class RefreshTokenSession extends BaseEntity {
   @Column(name = "last_ip_address_used")
   private String lastIpAddressUsed;
 
-  @Column(name = "last_used_at")
-  private Instant lastUsedAt;
+  @Column(name = "family_id")
+  private String familyId;
+
+  @Column(name = "rotated_at")
+  private Instant rotatedAt;
 
   @ManyToOne
   @JoinColumn(name = "user_id", nullable = false)

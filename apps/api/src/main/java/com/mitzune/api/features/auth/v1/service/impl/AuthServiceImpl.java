@@ -16,7 +16,6 @@ import com.mitzune.api.features.auth.v1.service.DeviceService;
 import com.mitzune.api.features.auth.v1.service.UserIdentityService;
 import com.mitzune.api.features.user.entity.User;
 import com.mitzune.api.features.user.v1.mapper.UserMapper;
-import jakarta.transaction.Transactional;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -33,6 +32,7 @@ import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -88,16 +88,22 @@ public class AuthServiceImpl implements AuthService {
     User user,
     RefreshTokenPair pair,
     String ua,
-    String ip
+    String ip,
+    String familyId
   ) {
     Instant now = Instant.now();
+    if (familyId == null || familyId.isBlank()) {
+      familyId = UUID.randomUUID().toString();
+    }
+
     RefreshTokenSession session = new RefreshTokenSession();
     session.setUser(user);
     session.setDeviceInfo(deviceService.parseDevice(ua));
     session.setCreatedIpAddress(ip);
     session.setLastIpAddressUsed(ip);
     session.setCreatedAt(now);
-    session.setLastUsedAt(now);
+    session.setUpdatedAt(now);
+    session.setFamilyId(familyId);
     session.setTokenHash(pair.tokenHash());
     session.setExpiresAt(now.plus(tokenTtlDays, ChronoUnit.DAYS));
     return session;
@@ -108,6 +114,10 @@ public class AuthServiceImpl implements AuthService {
     String hash = DigestUtils.sha256Hex(rawRefreshToken);
 
     return new RefreshTokenPair(rawRefreshToken, hash);
+  }
+
+  private void revokeTokenFamily(String familyId, Instant now) {
+    refreshTokenSessionRepository.revokeFamily(familyId, now);
   }
 
   @Transactional
@@ -132,7 +142,8 @@ public class AuthServiceImpl implements AuthService {
       user,
       refreshTokenPair,
       ua,
-      ip
+      ip,
+      ""
     );
     refreshTokenSessionRepository.save(refreshTokenSession);
 
@@ -145,45 +156,50 @@ public class AuthServiceImpl implements AuthService {
     );
   }
 
-  @Transactional
+  @Transactional(noRollbackFor = { AuthException.class })
   @Override
   public RefreshResponse rotateRefreshToken(
     String refreshToken,
     String ua,
     String ip
   ) {
-    if (refreshToken == null || refreshToken.isBlank()) {
-      throw AuthException.noRefreshToken();
-    }
-
+    Instant now = Instant.now();
     String hash = DigestUtils.sha256Hex(refreshToken);
+
     RefreshTokenSession oldSession = refreshTokenSessionRepository
       .findByTokenHash(hash)
       .orElseThrow(AuthException::refreshTokenNotFound);
 
+    if (oldSession.getRotatedAt() != null) {
+      revokeTokenFamily(oldSession.getFamilyId(), now);
+      throw AuthException.refreshTokenReused();
+    }
+
     if (oldSession.getRevokedAt() != null) {
+      revokeTokenFamily(oldSession.getFamilyId(), now);
       throw AuthException.refreshTokenRevoked();
     }
 
-    Instant now = Instant.now();
     if (oldSession.getExpiresAt().isBefore(now)) {
-      refreshTokenSessionRepository.delete(oldSession);
+      revokeTokenFamily(oldSession.getFamilyId(), now);
       throw AuthException.refreshTokenExpired();
     }
 
     User user = oldSession.getUser();
 
     oldSession.setRevokedAt(now);
-    oldSession.setLastUsedAt(now);
+    oldSession.setUpdatedAt(now);
+    oldSession.setRotatedAt(now);
     oldSession.setLastIpAddressUsed(ip);
-    refreshTokenSessionRepository.save(oldSession);
+    refreshTokenSessionRepository.saveAndFlush(oldSession);
 
     RefreshTokenPair refreshTokenPair = createRefreshToken();
     RefreshTokenSession refreshTokenSession = buildSession(
       user,
       refreshTokenPair,
       ua,
-      ip
+      ip,
+      oldSession.getFamilyId()
     );
     refreshTokenSessionRepository.save(refreshTokenSession);
 
@@ -191,5 +207,22 @@ public class AuthServiceImpl implements AuthService {
       this.issueAccessToken(user.getId(), user.getUserRole().name()),
       refreshTokenPair.rawToken()
     );
+  }
+
+  @Transactional
+  @Override
+  public void logoutUser(String refreshToken, String ip) {
+    String hash = DigestUtils.sha256Hex(refreshToken);
+    Instant now = Instant.now();
+    RefreshTokenSession session = refreshTokenSessionRepository
+      .findByTokenHash(hash)
+      .orElseThrow(AuthException::refreshTokenNotFound);
+
+    session.setUpdatedAt(now);
+    session.setRevokedAt(now);
+    session.setLastIpAddressUsed(ip);
+    refreshTokenSessionRepository.saveAndFlush(session);
+
+    revokeTokenFamily(session.getFamilyId(), now);
   }
 }
