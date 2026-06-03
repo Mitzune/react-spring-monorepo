@@ -6,14 +6,18 @@ export function NotFound() {
 	const navigate = useNavigate()
 
 	return (
-		<div className="flex w-full flex-col">
-			<IconMoodPuzzled />
+		<div className="flex h-dvh flex-col items-center justify-center gap-4">
+			<IconMoodPuzzled className="text-primary size-32" />
 
-			<h1>404 Page not found</h1>
+			<h1 className="text-2xl font-medium">404 Page not found</h1>
 
-			<p>Oops! We can't seem to find that page. Let's get you back home and back on track</p>
+			<p className="w-[400px] text-center">
+				Oops! We can't seem to find that page. Let's get you back home and back on track
+			</p>
 
-			<Button onClick={() => navigate('/login')}>Go back</Button>
+			<Button size={'lg'} variant={'secondary'} onClick={() => navigate('/login')}>
+				Go back
+			</Button>
 		</div>
 	)
 }

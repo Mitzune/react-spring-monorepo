@@ -156,6 +156,9 @@ public class AuthServiceImpl implements AuthService {
     );
   }
 
+  @Value("${auth.refresh-token.gracePeriod}")
+  private int gracePeriod;
+
   @Transactional(noRollbackFor = { AuthException.class })
   @Override
   public RefreshResponse rotateRefreshToken(
@@ -180,7 +183,12 @@ public class AuthServiceImpl implements AuthService {
       throw AuthException.refreshTokenRevoked();
     }
 
-    if (oldSession.getExpiresAt().isBefore(now)) {
+    if (
+      oldSession
+        .getExpiresAt()
+        .plus(gracePeriod, ChronoUnit.SECONDS)
+        .isBefore(now)
+    ) {
       revokeTokenFamily(oldSession.getFamilyId(), now);
       throw AuthException.refreshTokenExpired();
     }
