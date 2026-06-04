@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader } from '@app/components/ui/card'
 import { cn } from '@app/lib/utils'
 import { Container } from '@features/base/components/container'
 
-import { SampleAreaChart, SamplePieChart, TEST_CARD_DATA } from './sample/SampleCharts'
+import { SampleAreaChart, SamplePieChart, TEST_CARD_DATA } from '../sample/SampleCharts'
 
 export function DashboardView() {
 	return (

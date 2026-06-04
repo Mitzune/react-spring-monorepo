@@ -3,9 +3,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@app/
 import { Separator } from '@app/components/ui/separator'
 import { IconBusinessplan } from '@tabler/icons-react'
 
-import { useLogin } from './api/loginUser'
-import { ssoDetails } from './constant/SsoDetails'
-import { loginWithGoogle } from './utils/auth'
+import { useLogin } from '../api/loginUser'
+import { ssoDetails } from '../constant/SsoDetails'
+import { loginWithGoogle } from '../utils/auth'
 
 export function AuthView() {
 	const { executeLogin, isLoading } = useLogin()

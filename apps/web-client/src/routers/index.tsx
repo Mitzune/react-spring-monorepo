@@ -1,6 +1,6 @@
-import { AuthView } from '@features/auth/AuthView'
+import { AuthView } from '@features/auth/pages/AuthView'
 import { NotFound } from '@features/base/components/not-found/NotFound'
-import { DashboardView } from '@features/dashboard/DashboardView'
+import { DashboardView } from '@features/dashboard/pages/DashboardView'
 import { DashboardLayout } from '@layouts/dashboard/DashboardLayout'
 import { createBrowserRouter } from 'react-router'
 
