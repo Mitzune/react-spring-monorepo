@@ -12,7 +12,7 @@ public class UserMapperImpl implements UserMapper {
   public User fromDto(UserDto dto) {
     return User.builder()
       .id(dto.id())
-      .displayName(dto.nickname())
+      .displayName(dto.displayName())
       .userRole(dto.userRole())
       .email(dto.email())
       .build();
@@ -24,6 +24,7 @@ public class UserMapperImpl implements UserMapper {
       user.getId(),
       user.getDisplayName(),
       user.getEmail(),
+      user.getUsername(),
       user.getUserRole(),
       user.getCreatedAt(),
       user.getUpdatedAt()

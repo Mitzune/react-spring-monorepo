@@ -6,7 +6,8 @@ import java.util.UUID;
 
 public record UserDto(
   UUID id,
-  String nickname,
+  String displayName,
+  String username,
   String email,
   UserRole userRole,
   Instant createdAt,

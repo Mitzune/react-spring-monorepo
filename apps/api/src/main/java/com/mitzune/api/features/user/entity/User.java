@@ -35,11 +35,20 @@ public class User extends BaseEntity {
 
   @Column(
     name = "display_name",
-    updatable = false,
+    updatable = true,
     length = 50,
     nullable = false
   )
   private String displayName;
+
+  @Column(
+    name = "username",
+    updatable = true,
+    length = 15,
+    nullable = false,
+    unique = true
+  )
+  private String username;
 
   @Column(name = "email", updatable = false, nullable = false)
   private String email;

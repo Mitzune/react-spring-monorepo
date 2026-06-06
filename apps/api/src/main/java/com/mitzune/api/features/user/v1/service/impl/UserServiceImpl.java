@@ -11,6 +11,7 @@ import com.mitzune.api.features.user.v1.dto.UserDto;
 import com.mitzune.api.features.user.v1.enums.UserRole;
 import com.mitzune.api.features.user.v1.mapper.UserMapper;
 import com.mitzune.api.features.user.v1.service.UserService;
+import com.mitzune.api.features.user.v1.service.UsernameGenerator;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
@@ -26,6 +27,7 @@ public class UserServiceImpl implements UserService {
   private final UserRepository userRepository;
   private final UserMapper userMapper;
   private final UserIdentityRepository userIdentityRepository;
+  private final UsernameGenerator usernameGenerator;
 
   @Override
   public UserDto createNewUser(
@@ -35,28 +37,18 @@ public class UserServiceImpl implements UserService {
     Instant now = Instant.now();
     UserIdentity userIdentity = new UserIdentity();
     userIdentity.setAuthProvider(authProvider);
-
     userIdentity.setProviderId(firebaseToken.getUid());
-    Optional<User> user = userRepository.findByEmail(firebaseToken.getEmail());
-
-    // If user exists
-    if (user.isPresent()) {
-      User existingUser = user.get();
-      userIdentity.setUser(existingUser);
-      userIdentityRepository.save(userIdentity);
-
-      return userMapper.toDto(existingUser);
-    }
 
     // Create user
-    User createUser = new User();
-    createUser.setDisplayName(firebaseToken.getName());
-    createUser.setEmail(firebaseToken.getEmail());
-    createUser.setUserRole(UserRole.EMPLOYEE);
-    createUser.setCreatedAt(now);
-    createUser.setUpdatedAt(now);
+    User newUser = new User();
+    newUser.setUsername(usernameGenerator.generate());
+    newUser.setDisplayName(firebaseToken.getName());
+    newUser.setEmail(firebaseToken.getEmail());
+    newUser.setUserRole(UserRole.EMPLOYEE);
+    newUser.setCreatedAt(now);
+    newUser.setUpdatedAt(now);
 
-    User savedUser = userRepository.save(createUser);
+    User savedUser = userRepository.save(newUser);
 
     // Save to identities
     userIdentity.setUser(savedUser);
