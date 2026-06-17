@@ -1,23 +1,17 @@
 import { clearAccessToken, getAccessToken, setAccessToken } from '@features/auth/store/useAuthStore'
 import type { FetchOptions } from 'ofetch'
-import { $fetch, ofetch } from 'ofetch'
+import { $fetch, FetchError, ofetch } from 'ofetch'
 
-function setToken(token: string) {
-	setAccessToken(token)
-}
-
-function getToken() {
-	return getAccessToken()
-}
-
+const BASE_URL = import.meta.env.VITE_API_BASE_URL
 let refreshPromise: Promise<string | undefined> | null = null
+let isRedirecting = false
 
-async function refetchAccessToken(options: AnyObject): Promise<string | undefined> {
+async function refreshAccessToken(): Promise<string | undefined> {
 	if (refreshPromise) return refreshPromise
 
 	refreshPromise = (async () => {
 		try {
-			const { accessToken } = await $fetch<{ accessToken: string }>(`${options.baseURL}/api/v1/auth/refresh`, {
+			const { accessToken } = await $fetch<{ accessToken: string }>(`${BASE_URL}/api/v1/auth/refresh`, {
 				method: 'POST',
 				credentials: 'include',
 			})
@@ -26,6 +20,7 @@ async function refetchAccessToken(options: AnyObject): Promise<string | undefine
 				throw new Error('Missing access token in refresh response')
 			}
 
+			setAccessToken(accessToken)
 			return accessToken
 		} catch (e) {
 			console.error(e)
@@ -39,82 +34,85 @@ async function refetchAccessToken(options: AnyObject): Promise<string | undefine
 }
 
 function redirectToLogin() {
+	if (isRedirecting) return
+	isRedirecting = true
+
 	clearAccessToken()
-	const path = window.location.pathname
 
-	if (path === '/login') return
+	if (window.location.pathname !== '/login') {
+		window.location.href = '/login'
+	}
 
-	window.location.href = '/login'
+	setTimeout(() => {
+		isRedirecting = false
+	}, 2000)
 }
 
 const apiClient = ofetch.create({
-	baseURL: import.meta.env.VITE_API_BASE_URL,
+	baseURL: BASE_URL,
+	retry: false,
 	onRequest({ options }) {
-		const token = getToken()
+		const token = getAccessToken()
+
 		const headers = new Headers(options.headers)
-		if (!headers.has('Content-Type')) {
-			headers.set('Content-Type', 'application/json')
-		}
 		if (token) {
 			headers.set('Authorization', `Bearer ${token}`)
 		}
 
 		options.headers = headers
 	},
-	async onResponse(context) {
-		const { response, options, request } = context
-
-		if (response?.status === 401) {
-			const accessToken = await refetchAccessToken(options)
-
-			if (!accessToken) {
-				redirectToLogin()
-				return
-			}
-
-			setToken(accessToken)
-
-			try {
-				await $fetch(request, {
-					...options,
-					headers: {
-						...options.headers,
-						Authorization: `Bearer ${accessToken}`,
-					},
-					retry: false,
-					onResponse(ctx: AnyObject) {
-						Object.assign(context, ctx)
-					},
-				})
-			} catch {
-				redirectToLogin()
-			}
-		}
-	},
 })
 
+async function apiFetch<T>(request: string, options: FetchOptions<'json'>): Promise<T> {
+	try {
+		return await apiClient<T>(request, options)
+	} catch (err) {
+		if (!(err instanceof FetchError) || err.status !== 401) throw err
+
+		if (request.includes('/api/v1/auth/refresh')) {
+			redirectToLogin()
+			throw err
+		}
+
+		const newToken = await refreshAccessToken()
+
+		if (!newToken) {
+			redirectToLogin()
+			throw err
+		}
+
+		return await apiClient<T>(request, {
+			...options,
+			headers: {
+				...options.headers,
+				Authorization: `Bearer ${newToken}`,
+			},
+		})
+	}
+}
+
 const Api = {
-	get: <T = unknown>(url: string, opts?: FetchOptions<'json'>) => apiClient<T>(url, { method: 'GET', ...opts }),
+	get: <T = unknown>(url: string, opts?: FetchOptions<'json'>) => apiFetch<T>(url, { method: 'GET', ...opts }),
 
 	post: <T = unknown, B extends Record<string, unknown> = Record<string, unknown>>(
 		url: string,
 		body: B,
 		opts?: FetchOptions<'json'>,
-	) => apiClient<T>(url, { method: 'POST', body, ...opts }),
+	) => apiFetch<T>(url, { method: 'POST', body, ...opts }),
 
 	put: <T = unknown, B extends Record<string, unknown> = Record<string, unknown>>(
 		url: string,
 		body: B,
 		opts?: FetchOptions<'json'>,
-	) => apiClient<T>(url, { method: 'PUT', body, ...opts }),
+	) => apiFetch<T>(url, { method: 'PUT', body, ...opts }),
 
 	patch: <T = unknown, B extends Record<string, unknown> = Record<string, unknown>>(
 		url: string,
 		body: B,
 		opts?: FetchOptions<'json'>,
-	) => apiClient<T>(url, { method: 'PATCH', body, ...opts }),
+	) => apiFetch<T>(url, { method: 'PATCH', body, ...opts }),
 
-	delete: <T = unknown>(url: string, opts?: FetchOptions<'json'>) => apiClient<T>(url, { method: 'DELETE', ...opts }),
+	delete: <T = unknown>(url: string, opts?: FetchOptions<'json'>) => apiFetch<T>(url, { method: 'DELETE', ...opts }),
 }
 
 export { Api }

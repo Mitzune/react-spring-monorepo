@@ -5,6 +5,7 @@ import com.mitzune.api.features.user.v1.service.UserService;
 import java.security.Principal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,5 +19,10 @@ public class UserController {
   @GetMapping
   public UserDto getCurrentUser(Principal principal) {
     return userService.getCurrentUser();
+  }
+
+  @GetMapping("/{id}")
+  public UserDto findByUsername(@PathVariable("id") String username) {
+    return userService.findByUsername(username);
   }
 }

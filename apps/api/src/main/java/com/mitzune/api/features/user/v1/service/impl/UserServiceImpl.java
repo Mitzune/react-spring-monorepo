@@ -70,4 +70,12 @@ public class UserServiceImpl implements UserService {
       .map(userMapper::toDto)
       .orElseThrow(UserException::userNotFound);
   }
+
+  @Override
+  public UserDto findByUsername(String username) {
+    return userRepository
+      .findByUsername(username)
+      .map(userMapper::toDto)
+      .orElseThrow(UserException::usernameNotFound);
+  }
 }

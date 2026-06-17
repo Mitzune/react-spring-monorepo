@@ -32,7 +32,7 @@ export function Header() {
 
 				<BaseDropDown
 					header={
-						<button className="flex items-center gap-4">
+						<button className="flex items-center gap-2">
 							<Avatar>
 								<AvatarImage src="https://github.com/shadcn.png" />
 							</Avatar>

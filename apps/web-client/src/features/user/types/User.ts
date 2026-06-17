@@ -1,6 +1,7 @@
 export interface User {
 	id: string
-	nickname: string
+	username: string
+	displayName: string
 	userRole: (typeof UserRole)[keyof typeof UserRole]
 	email: string
 	createdAt: Date

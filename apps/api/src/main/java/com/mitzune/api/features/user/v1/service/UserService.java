@@ -8,4 +8,6 @@ public interface UserService {
   UserDto createNewUser(AuthProvider authProvider, FirebaseToken firebaseToken);
 
   UserDto getCurrentUser();
+
+  UserDto findByUsername(String username);
 }

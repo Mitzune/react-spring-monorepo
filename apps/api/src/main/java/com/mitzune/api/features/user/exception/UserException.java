@@ -12,4 +12,12 @@ public class UserException extends AppException {
   public static UserException userNotFound() {
     return new UserException(HttpStatus.NOT_FOUND, "USER_001", "No user found");
   }
+
+  public static UserException usernameNotFound() {
+    return new UserException(
+      HttpStatus.NOT_FOUND,
+      "USER_002",
+      "No user with the username found"
+    );
+  }
 }
